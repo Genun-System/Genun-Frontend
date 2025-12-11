@@ -2,18 +2,17 @@
 import { useParams } from "next/navigation";
 import { IconButton, Spinner, Typography } from "../../components/MaterialTailwind"
 import { useEffect, useState } from "react";
-import dynamic from 'next/dynamic';
 import Emoji from "../../assets/images/emoji.png";
 import Image from "next/image";
-import Button from "../../components/Button";
-//import TempImage from "../../assets/images/test_image.jpeg";
-import BarCode from "../../assets/images/barCode.svg";
+import Button from "@/app/components/Button";
+//import TempImage from "@/app/assets/images/test_image.jpeg";
+import BarCode from "@/app/assets/images/barCode.svg";
 import { ClipboardIcon, PhotoIcon, MapPinIcon } from '@heroicons/react/24/outline'
-import { verifyProduct } from "../../actions/product";
+import { verifyProduct } from "@/app/actions/product";
 import { toast } from "react-toastify";
 import { format } from "date-fns";
-import formatWalletAddres from "../../utils/formatWalletAddress";
-import { LimitDisplayableTexts } from "../../utils/LimitDisplayableTexts";
+import formatWalletAddres from "@/app/utils/formatWalletAddress";
+import { LimitDisplayableTexts } from "@/app/utils/LimitDisplayableTexts";
 import SadEmoji from "../../assets/images/sad_emoji.jpeg";
 
 const ProductDetails = () => {
@@ -21,8 +20,7 @@ const ProductDetails = () => {
     const [viewDetails, setViewDetails] = useState(false);
     const [verifying, setVerifying] = useState(true);
     const [product, setProduct] = useState(null);
-    const [error, setError] = useState(false);
-    const [isClient, setIsClient] = useState(false);
+    const [error, setError] = useState(false)
 
     const copyToClipBoard = (content, text) => {
         navigator.clipboard.writeText(text).then(res => {
@@ -30,70 +28,45 @@ const ProductDetails = () => {
         })
     }
 
-    // Ensure we're on the client side
     useEffect(() => {
-        setIsClient(true);
-    }, []);
-
-    useEffect(() => {
-        if (!isClient) return; // Don't run on server
-        
         const checkProduct = async () => {
             setVerifying(true)
-            console.log('🔍 Starting product verification for ID:', params.productId);
-            
             try {
                 const response = await verifyProduct(params.productId);
-                console.log('📡 Response received:', response.status, response.statusText);
-                
                 const result = await response.json();
-                console.log('📦 Response data:', result);
-                
                 if (response.ok) {
-                    console.log('✅ Product verification successful');
+                    //console.log("products:", result?.product)
+                    //router.replace("/dashboard/manufacturer")
                     setVerifying(false)
                     setProduct(result?.product)
-                } else {
-                    console.log('❌ Product verification failed:', result);
+                }
+
+                else {
                     setVerifying(false)
                     if (result?.message) {
                         toast.error(result?.message)
                         setError(true)
-                    } else {
-                        toast.error('Product verification failed')
-                        setError(true)
                     }
+
                 }
             }
 
             catch (err) {
-                console.log("Product verification error:", err)
+                console.log("error:", err)
                 setVerifying(false)
-                setError(true)
-                
-                // Handle different types of errors
                 if (err?.response?.data?.message) {
                     toast.error(err?.response.data?.message)
-                } else if (err?.message) {
-                    toast.error(err.message)
-                } else {
-                    toast.error("Unable to verify product. Backend service may be unavailable.")
+                    setError(true)
+                }
+                else {
+                    toast.error("Oops, something went wrong")
+                    setError(true)
                 }
             }
         }
 
         checkProduct();
-    }, [params.productId, isClient])
-
-    // Show loading during SSR
-    if (!isClient) {
-        return (
-            <div className="flex flex-col flex-1 items-center justify-center">
-                <Spinner className="h-8 w-8" />
-                <Typography className="mt-4">Loading...</Typography>
-            </div>
-        );
-    }
+    }, [params.productId])
 
     return (
         <>
@@ -114,7 +87,7 @@ const ProductDetails = () => {
                                             width={120}
                                             height={120}
                                             className="mb-[42px]"
-                                            alt="Success emoji"
+                                            alt=""
                                         />
                                         <Typography className="mb-[35px] font-crimsonText text-[24px] leading-[31px] md:text-[32px] font-semibold md:leading-[41px] text-[#474935] text-center">
                                             Your product is the <span className="text-primary">real deal</span>
@@ -129,7 +102,6 @@ const ProductDetails = () => {
                                             <div className="relative w-[80%] tabletland:w-[409px] h-[350px] self-end">
                                                 <Image
                                                     src={product?.imageUrl}
-                                                    alt={product?.name || "Product image"}
                                                     //width={409}
                                                     //height={425}
                                                     className=" "
@@ -176,7 +148,7 @@ const ProductDetails = () => {
                                                     </div>
                                                     <div className="flex space-x-[10px] items-center mt-[45px]">
                                                         <svg width="32" height="33" viewBox="0 0 32 33" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                            <g clipPath="url(#clip0_348_151)">
+                                                            <g clip-path="url(#clip0_348_151)">
                                                                 <path d="M12.89 25.876V15.208H11.624C10.7173 15.6913 9.84099 16.2297 9 16.82V18.21C9.75 17.696 10.938 16.97 11.516 16.656H11.54V25.876H12.89ZM15.266 23.266C15.36 24.546 16.454 26.078 18.672 26.078C21.188 26.078 22.672 23.946 22.672 20.336C22.672 16.468 21.11 15 18.766 15C16.914 15 15.172 16.344 15.172 18.618C15.172 20.938 16.82 22.158 18.524 22.158C20.016 22.158 20.984 21.406 21.29 20.578H21.344C21.336 23.21 20.422 24.906 18.734 24.906C17.406 24.906 16.718 24.006 16.634 23.266H15.266ZM21.172 18.632C21.172 20.024 20.054 20.992 18.804 20.992C17.602 20.992 16.516 20.226 16.516 18.592C16.516 16.946 17.68 16.172 18.852 16.172C20.118 16.172 21.172 16.968 21.172 18.632Z" fill="#FAFBFD" />
                                                                 <path d="M7 0.5C7.26522 0.5 7.51957 0.605357 7.70711 0.792893C7.89464 0.98043 8 1.23478 8 1.5V2.5H24V1.5C24 1.23478 24.1054 0.98043 24.2929 0.792893C24.4804 0.605357 24.7348 0.5 25 0.5C25.2652 0.5 25.5196 0.605357 25.7071 0.792893C25.8946 0.98043 26 1.23478 26 1.5V2.5H28C29.0609 2.5 30.0783 2.92143 30.8284 3.67157C31.5786 4.42172 32 5.43913 32 6.5V28.5C32 29.5609 31.5786 30.5783 30.8284 31.3284C30.0783 32.0786 29.0609 32.5 28 32.5H4C2.93913 32.5 1.92172 32.0786 1.17157 31.3284C0.421427 30.5783 0 29.5609 0 28.5V6.5C0 5.43913 0.421427 4.42172 1.17157 3.67157C1.92172 2.92143 2.93913 2.5 4 2.5H6V1.5C6 1.23478 6.10536 0.98043 6.29289 0.792893C6.48043 0.605357 6.73478 0.5 7 0.5ZM4 4.5C3.46957 4.5 2.96086 4.71071 2.58579 5.08579C2.21071 5.46086 2 5.96957 2 6.5V28.5C2 29.0304 2.21071 29.5391 2.58579 29.9142C2.96086 30.2893 3.46957 30.5 4 30.5H28C28.5304 30.5 29.0391 30.2893 29.4142 29.9142C29.7893 29.5391 30 29.0304 30 28.5V6.5C30 5.96957 29.7893 5.46086 29.4142 5.08579C29.0391 4.71071 28.5304 4.5 28 4.5H4Z" fill="#FAFBFD" />
                                                                 <path d="M5 8.5C5 8.23478 5.10536 7.98043 5.29289 7.79289C5.48043 7.60536 5.73478 7.5 6 7.5H26C26.2652 7.5 26.5196 7.60536 26.7071 7.79289C26.8946 7.98043 27 8.23478 27 8.5V10.5C27 10.7652 26.8946 11.0196 26.7071 11.2071C26.5196 11.3946 26.2652 11.5 26 11.5H6C5.73478 11.5 5.48043 11.3946 5.29289 11.2071C5.10536 11.0196 5 10.7652 5 10.5V8.5Z" fill="#FAFBFD" />
@@ -252,7 +224,6 @@ const ProductDetails = () => {
                                                 <div className="bg-white w-8 h-8 absolute top-[-16px] right-[-20px] rounded-bl-[10px] rounded-tl-[10px]" />
                                                 <Image
                                                     src={BarCode}
-                                                    alt="Product barcode"
                                                     className="w-full h-[75px]"
                                                 />
                                                 <Typography className="text-center text-background font-crimsonText leading-[31px] font-semibold">
@@ -266,7 +237,7 @@ const ProductDetails = () => {
                                         width={120}
                                         height={120}
                                         className="mb-[42px]"
-                                        alt="Sad emoji"
+                                        alt=""
                                     />
                                     <Typography className="mb-2 font-crimsonText text-[24px] leading-[31px] md:text-[32px] font-semibold md:leading-[41px] text-[#474935] text-center">
                                         No record of this product on <span className="text-primary">our system</span>

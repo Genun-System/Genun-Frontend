@@ -1,31 +1,19 @@
 "use client"
 import { Form, Formik } from "formik";
-
+import Button from "../components/Button";
+import { Typography } from "../components/MaterialTailwind"
 import * as yup from "yup";
-import React, { useState, useEffect, Suspense } from "react"
-import Input from "../components/Input";
-import ErrorMessage from "../components/ErrorMessage";
+import React, { useState } from "react"
+import Input from "@/app/components/Input";
+import ErrorMessage from "@/app/components/ErrorMessage";
 import PasswordInput from "../components/PasswordInput";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useAccount } from 'wagmi';
-import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { login } from "../actions/auth";
 import { toast } from "react-toastify";
-import Link from "next/link";
 
-const LoginContent = () => {
+const Login = () => {
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const { isConnected, address } = useAccount();
     const [submitting, setSubmitting] = useState(false);
-    const [isWalletConnected, setIsWalletConnected] = useState(false);
-
-    useEffect(() => {
-        const walletParam = searchParams.get('wallet');
-        if (walletParam === 'connected' && isConnected) {
-            setIsWalletConnected(true);
-        }
-    }, [searchParams, isConnected]);
 
     const handleLogin = async (values) => {
         setSubmitting(true);
@@ -71,166 +59,87 @@ const LoginContent = () => {
     }
 
     return (
-        <section className="min-h-screen flex items-center justify-center py-12 px-4">
-            <div className="max-w-2xl w-full">
-                {/* Header */}
-                <div className="text-center mb-8">
-                    <div className="flex items-center justify-center mb-6">
-                        <Image src="/genun.png" alt="Genun" width={96} height={96} className="h-20 md:h-24 w-auto hover:scale-105 transition-transform duration-300" />
-                    </div>
-                    <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-                        Welcome Back
-                    </h1>
-                    <p className="text-gray-400 text-lg">
-                        Sign in to your Genun account
-                    </p>
-                    
-                    {isWalletConnected && (
-                        <div className="mt-6 flex justify-center">
-                            <div className="flex items-center gap-3 px-6 py-3 bg-green-500/20 border border-green-500/30 rounded-xl backdrop-blur-sm">
-                                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                                <span className="text-green-400 font-medium">
-                                    Wallet Connected: {address?.slice(0, 8)}...{address?.slice(-6)}
-                                </span>
+        <section className="py-24">
+            <div className="mb-[61px]">
+                <Typography className="font-crimsonText text-center text-[21px] leading-[32px] md:text-[32px] font-semibold md:leading-[41px] text-[#474935]">
+                    Login
+                    <span variant="" className="font-crimsonText text-[21px] leading-[32px] md:text-[32px] font-semibold md:leading-[41px] text-primary">
+                        {" "}In
+                    </span>
+                </Typography>
+            </div>
+            <div className="px-[30px] md:px-0">
+                <Formik
+                    onSubmit={handleLogin}
+                    validationSchema={signinFormValidationSchema}
+                    initialValues={formInitialValues}
+                >
+                    {({ handleSubmit, handleBlur, handleChange, errors, values, touched, setFieldValue }) => (
+                        <Form
+                            onSubmit={handleSubmit}
+                            className="flex flex-col items-center w-full  md:w-[325px] space-y-[35px]"
+                        >
+                            <div className="flex flex-col space-y-2 w-full ">
+                                <Input
+                                    label="Email"
+                                    Icon={
+                                        () => (
+                                            <svg width="22" height="16" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M20 0.5H2C1.60218 0.5 1.22064 0.658035 0.93934 0.93934C0.658035 1.22064 0.5 1.60218 0.5 2V14C0.5 14.3978 0.658035 14.7794 0.93934 15.0607C1.22064 15.342 1.60218 15.5 2 15.5H20C20.3978 15.5 20.7794 15.342 21.0607 15.0607C21.342 14.7794 21.5 14.3978 21.5 14V2C21.5 1.60218 21.342 1.22064 21.0607 0.93934C20.7794 0.658035 20.3978 0.5 20 0.5ZM18.35 2L11 7.085L3.65 2H18.35ZM2 14V2.6825L10.5725 8.615C10.698 8.7021 10.8472 8.74877 11 8.74877C11.1528 8.74877 11.302 8.7021 11.4275 8.615L20 2.6825V14H2Z" fill={`${errors.email && touched.email ? "#FF647C" : "#474935"}`} fill-opacity="0.5" />
+                                            </svg>
+
+                                        )
+                                    }
+                                    error={errors.email}
+                                    touched={touched.email}
+                                    value={values.email}
+                                    onChange={handleChange}
+                                    name="email"
+                                    onBlur={handleBlur}
+                                    className="w-full"
+                                    placeholder="Email"
+                                    type="email"
+                                    autocomplete="email"
+                                />
+                                <ErrorMessage error={errors.email} touched={touched.email} />
                             </div>
-                        </div>
+                            <div className="flex flex-col space-y-2 w-full">
+                                <PasswordInput
+                                    label="Password"
+                                    Icon={
+                                        () => (
+                                            <svg width="16" height="22" viewBox="0 0 16 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M14 9.5H12.5V5C12.5 3.80653 12.0259 2.66193 11.182 1.81802C10.3381 0.974106 9.19347 0.5 8 0.5C6.80653 0.5 5.66193 0.974106 4.81802 1.81802C3.97411 2.66193 3.5 3.80653 3.5 5V9.5H2C1.60218 9.5 1.22064 9.65804 0.93934 9.93934C0.658035 10.2206 0.5 10.6022 0.5 11V20C0.5 20.3978 0.658035 20.7794 0.93934 21.0607C1.22064 21.342 1.60218 21.5 2 21.5H14C14.3978 21.5 14.7794 21.342 15.0607 21.0607C15.342 20.7794 15.5 20.3978 15.5 20V11C15.5 10.6022 15.342 10.2206 15.0607 9.93934C14.7794 9.65804 14.3978 9.5 14 9.5ZM5 5C5 4.20435 5.31607 3.44129 5.87868 2.87868C6.44129 2.31607 7.20435 2 8 2C8.79565 2 9.55871 2.31607 10.1213 2.87868C10.6839 3.44129 11 4.20435 11 5V9.5H5V5ZM14 20H2V11H14V20Z" fill={`${errors.password && touched.password ? "#FF647C" : "#474935"}`} />
+                                            </svg>
+
+                                        )
+                                    }
+                                    error={errors.password}
+                                    touched={touched.password}
+                                    value={values.password}
+                                    onChange={handleChange}
+                                    name="password"
+                                    onBlur={handleBlur}
+                                    className="w-full"
+                                    placeholder="Password"
+                                    autocomplete="new-password"
+                                />
+                                <ErrorMessage error={errors.password} touched={touched.password} />
+                            </div>
+                            <Button className="w-full md:w-[325px]" variant="filled"
+                                type="submit" loading={submitting}
+                            >
+                                <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M16.5 3.423V14.385C16.5 14.845 16.346 15.229 16.038 15.537C15.7293 15.8457 15.345 16 14.885 16H2.115C1.655 16 1.271 15.846 0.963 15.538C0.654333 15.2293 0.5 14.845 0.5 14.385V1.615C0.5 1.155 0.654333 0.771 0.963 0.463C1.271 0.154333 1.655 0 2.115 0H13.077L16.5 3.423ZM15.5 3.85L12.65 1H2.115C1.93567 1 1.78833 1.05767 1.673 1.173C1.55767 1.28833 1.5 1.43567 1.5 1.615V14.385C1.5 14.5643 1.55767 14.7117 1.673 14.827C1.78833 14.9423 1.93567 15 2.115 15H14.885C15.0643 15 15.2117 14.9423 15.327 14.827C15.4423 14.7117 15.5 14.5643 15.5 14.385V3.85ZM8.5 12.538C9.05133 12.538 9.52233 12.3427 9.913 11.952C10.3043 11.5607 10.5 11.0893 10.5 10.538C10.5 9.98667 10.3043 9.51567 9.913 9.125C9.52233 8.73367 9.05133 8.538 8.5 8.538C7.94867 8.538 7.47767 8.73367 7.087 9.125C6.69567 9.51633 6.5 9.98733 6.5 10.538C6.5 11.0887 6.69567 11.56 7.087 11.952C7.47767 12.3427 7.94867 12.538 8.5 12.538ZM3.27 5.77H10.692V2.77H3.27V5.77ZM1.5 3.85V15V1V3.85Z" fill="#FAFBFD" />
+                                </svg>
+                                Submit
+                            </Button>
+                        </Form>
                     )}
-                </div>
-
-                {/* Main Form Container */}
-                <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-8 shadow-2xl">
-                    <Formik
-                        onSubmit={handleLogin}
-                        validationSchema={signinFormValidationSchema}
-                        initialValues={formInitialValues}
-                    >
-                        {({ handleSubmit, handleBlur, handleChange, errors, values, touched }) => (
-                            <Form onSubmit={handleSubmit} className="space-y-6">
-                                {/* Email Field */}
-                                <div className="space-y-2">
-                                    <label className="text-white font-medium text-sm">Email Address</label>
-                                    <Input
-                                        Icon={() => (
-                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                            </svg>
-                                        )}
-                                        error={errors.email}
-                                        touched={touched.email}
-                                        value={values.email}
-                                        onChange={handleChange}
-                                        name="email"
-                                        onBlur={handleBlur}
-                                        className="w-full bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 rounded-lg"
-                                        placeholder="Enter your email"
-                                        type="email"
-                                    />
-                                    <ErrorMessage error={errors.email} touched={touched.email} />
-                                </div>
-
-                                {/* Password Field */}
-                                <div className="space-y-2">
-                                    <div className="flex items-center justify-between">
-                                        <label className="text-white font-medium text-sm">Password</label>
-                                        <Link href="/forgot-password" className="text-blue-400 hover:text-blue-300 text-sm transition-colors">
-                                            Forgot password?
-                                        </Link>
-                                    </div>
-                                    <PasswordInput
-                                        Icon={() => (
-                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                            </svg>
-                                        )}
-                                        error={errors.password}
-                                        touched={touched.password}
-                                        value={values.password}
-                                        onChange={handleChange}
-                                        name="password"
-                                        onBlur={handleBlur}
-                                        className="w-full bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 rounded-lg"
-                                        placeholder="Enter your password"
-                                    />
-                                    <ErrorMessage error={errors.password} touched={touched.password} />
-                                </div>
-
-                                {/* Remember Me */}
-                                <div className="flex items-center">
-                                    <input
-                                        id="remember-me"
-                                        name="remember-me"
-                                        type="checkbox"
-                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 bg-gray-700 rounded"
-                                    />
-                                    <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-300">
-                                        Remember me for 30 days
-                                    </label>
-                                </div>
-
-                                {/* Submit Button */}
-                                <div className="pt-4">
-                                    <button
-                                        type="submit"
-                                        disabled={submitting}
-                                        className="w-full px-8 py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 text-white font-semibold rounded-lg transition-all duration-300 hover:scale-105 disabled:scale-100 flex items-center justify-center gap-3 shadow-lg hover:shadow-blue-500/25"
-                                    >
-                                        {submitting ? (
-                                            <>
-                                                <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                                    <path className="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                                </svg>
-                                                Signing In...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                                                </svg>
-                                                Sign In
-                                            </>
-                                        )}
-                                    </button>
-                                </div>
-
-
-
-                                {/* Sign Up Link */}
-                                <div className="text-center pt-4 border-t border-gray-700">
-                                    <p className="text-gray-400">
-                                        Don&apos;t have an account?{" "}
-                                        <Link href="/signup" className="text-blue-400 hover:text-blue-300 font-medium transition-colors">
-                                            Create one here
-                                        </Link>
-                                    </p>
-                                </div>
-                            </Form>
-                        )}
-                    </Formik>
-                </div>
-
-                {/* Back to Home */}
-                <div className="text-center mt-6">
-                    <Link href="/" className="text-gray-400 hover:text-white transition-colors flex items-center justify-center gap-2">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                        </svg>
-                        Back to Home
-                    </Link>
-                </div>
+                </Formik>
             </div>
         </section>
     )
 }
-
-const Login = () => {
-    return (
-        <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center">
-            <div className="text-white">Loading...</div>
-        </div>}>
-            <LoginContent />
-        </Suspense>
-    );
-};
 
 export default Login;

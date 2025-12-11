@@ -3,7 +3,7 @@
 import { useParams, useRouter } from "next/navigation";
 import { Spinner, Typography } from "../../../components/MaterialTailwind"
 import React, { useState, useEffect } from "react"
-import { verifyAccount } from "../../../actions/auth";
+import { verifyAccount } from "@/app/actions/auth";
 import { toast } from "react-toastify";
 
 const VerifyAccount = () => {
@@ -45,7 +45,7 @@ const VerifyAccount = () => {
             }
         }
         _verifyAccount();
-    }, [param, router])
+    }, [param])
 
     return (
         <section className="h-[calc(100vh-84px)] px-[30px] flex items-center  tabletland:h-[calc(100vh-107px)] -mt-[84px] tabletland:-mt-[107px]">

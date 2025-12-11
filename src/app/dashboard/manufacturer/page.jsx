@@ -1,15 +1,14 @@
 "use client";
 
-import Button from "../../components/Button";
+import Button from "@/app/components/Button";
 import { Spinner, Tooltip, Typography } from "../../components/MaterialTailwind";
-
+import {  months, authentications } from "./data";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
-import RealTimeAuthChart from "./RealTimeAuthChart";
+import AuthCharts from "./AuthChart";
 import { useEffect, useState } from "react";
-import { getAuthentications, getManufacturerStats } from "../../actions/product";
-import { generateSampleAuthData } from "./generateSampleData";
-import { LimitDisplayableTexts } from "../../utils/LimitDisplayableTexts";
+import { getAuthentications, getManufacturerStats } from "@/app/actions/product";
+import { LimitDisplayableTexts } from "@/app/utils/LimitDisplayableTexts";
 
 const Dashboard = () => {
     const router = useRouter();
@@ -142,8 +141,12 @@ const Dashboard = () => {
                 <Typography className="text-primary font-crimsonText font-semibold text-[20px] leading-[26px] text-justify">
                     Authentications
                 </Typography>
-                <div className="pr-6 pb-6">
-                    <RealTimeAuthChart auths={auths.length > 0 ? auths : generateSampleAuthData()} />
+                <div className="">
+                    {/* <Typography className="font-crimsonText font-bold text-[20px] leading-[26px]">Coming soon (Chat)</Typography> */}
+                    <AuthCharts
+                        labels={months}
+                        values={authentications}
+                    />
                 </div>
             </div>
 

@@ -11,12 +11,12 @@ import Drawer from "./Drawer";
 import { ConnectButton } from "../../components/Ranbowkit"
 import { useEffect, useState } from "react";
 import AuthProvider from "../../context/User";
-import RequireAuth from "../../wrapper/RequireAuth";
-import { getUser } from "../../actions/auth";
+import RequireAuth from "@/app/wrapper/RequireAuth";
+import { getUser } from "@/app/actions/auth";
 import DeployContractDialog from "./DeployContractDialog";
 import { toast } from "react-toastify";
-import { POOS_FACTORY_CONRACT_ADDRESS } from "../../config";
-import abi from "../../utils/abi";
+import { POOS_FACTORY_CONRACT_ADDRESS } from "@/app/config";
+import abi from "@/app/utils/abi";
 import ERCDeployAlert from "./ERCDeployAlert";
 
 const DashboardLayout = ({ children }) => {
@@ -67,7 +67,7 @@ const DashboardLayout = ({ children }) => {
     return (
         <RequireAuth>
             <AuthProvider value={{ user, setUser }}>
-                <main className="flex min-h-screen overflow-y-none flex-col tabletland:flex-row relative bg-black">
+                <main className="flex min-h-screen overflow-y-none flex-col tabletland:flex-row relative">
                     {/*  Side nav */}
                     <div className=" hidden tabletland:block tabletland:w-[282px]">
                         <SideNav />
@@ -79,13 +79,13 @@ const DashboardLayout = ({ children }) => {
                     <div className="flex  w-full  flex-col px-[15px] md:px-[30px] tabletland:px-[65px] pt-8 tabletland:pt-[55px]">
                         {
                             isConnected ?
-                                <div className="self-end px-4 py-2 md:px-6 md:py-[10px] border rounded-[5px] border-white/20 bg-white/10 flex items-center space-x-[15px]">
+                                <div className="self-end px-4 py-2 md:px-6 md:py-[10px] border rounded-[5px] border-[#4749354D] flex items-center space-x-[15px]">
                                     <div className="w-[30px] h-[30px] rounded-full bg-[#47493533] flex  items-center justify-center">
-                                        <Image width={16} height={16} src={WalletLogo} alt="Wallet Logo" />
+                                        <Image width={16} height={16} src={WalletLogo} alt="" />
                                     </div>
                                     <div className="flex flex-col space-y-1">
-                                        <Typography className="text-white font-semibold font-inter text-[16px] leading-[24px]">
-                                            {result?.isFetched ? Number(result.data?.formatted).toFixed(6) : ""} <span> {result?.isFetched ? result.data?.symbol : ""}</span>
+                                        <Typography className="text-[#474935] font-semibold font-inter text-[16px] leading-[24px]">
+                                            {result?.isFetched ? Number(result.data.formatted).toFixed(6) : ""} <span> {result?.isFetched ? result.data.symbol : ""}</span>
                                         </Typography>
                                         <Typography className="text-primary text-[12px] leading-[12px] font-inter">
                                             {formatWalletAddres(address)}

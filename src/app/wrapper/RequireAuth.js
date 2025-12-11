@@ -24,7 +24,7 @@ const RequireAuth = ({ children }) => {
         else {
             setIsTokenValid(true)
         }
-    }, [router, token])
+    }, [])
 
     return (
         <>

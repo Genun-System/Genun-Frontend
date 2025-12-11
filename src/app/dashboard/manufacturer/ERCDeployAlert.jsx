@@ -1,7 +1,7 @@
 "use-client";
 
-import Button from "../../components/Button";
-import { Alert, Typography } from "../../components/MaterialTailwind";
+import Button from "@/app/components/Button";
+import { Alert, Typography } from "@/app/components/MaterialTailwind";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 
 

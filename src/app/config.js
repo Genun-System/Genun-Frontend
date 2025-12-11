@@ -1,41 +1,29 @@
-// Import error suppression utility
-import './utils/errorSuppression';
+import { getDefaultConfig } from "@rainbow-me/rainbowkit";
+import {
+    mainnet,
+    arbitrum,
+    arbitrumSepolia,
+    arbitrumGoerli,
+    sepolia,
+    goerli
+} from 'wagmi/chains';
 
-// Browser-only wagmi configuration
-let wagmiConfig = null;
-
-// Only initialize wagmi on the client side
-if (typeof window !== 'undefined') {
-  const { getDefaultConfig } = require("@rainbow-me/rainbowkit");
-  const { baseSepolia } = require('wagmi/chains');
-  const { http } = require('wagmi');
-
-  wagmiConfig = getDefaultConfig({
+export const wagmiConfig = getDefaultConfig({
     appName: 'Genun',
-    projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '2f5a2c1b8e4d3a9f7c6b5e8d9a2f1c4b',
-    chains: [baseSepolia],
-    ssr: false, // Disable SSR for wagmi
-    transports: {
-      [baseSepolia.id]: http('https://sepolia.base.org', {
-        batch: false,
-        fetchOptions: {
-          timeout: 30000,
-        },
-        retryCount: 5,
-        retryDelay: 2000,
-      })
-    }
-  });
-}
+    projectId: 'YOUR_PROJECT_ID',
+    // projectId: 'df01c1b1561c6373ef84c87b27c8ea8c',
+    chains: [ arbitrumSepolia,],
+    ssr: true, // If your dApp uses server side rendering (SSR
+});
 
-export { wagmiConfig };
 
 export const API_URL = {
-    DEV_URL: (process.env.NEXT_PUBLIC_DEV_URL || 'http://localhost:3002/') + 'api/',
-    PROD_URL: (process.env.NEXT_PUBLIC_PROD_URL || 'https://genun-api-1.onrender.com/') + 'api/',
+    DEV_URL: process.env.NEXT_PUBLIC_DEV_URL,
+    PROD_URL: process.env.NEXT_PUBLIC_PROD_URL,
+    // PROD_URL: "https://y2sm8pjvyv.us-east-1.awsapprunner.com/api/",
 }
 
-export const POOS_FACTORY_CONRACT_ADDRESS = "0x2A301B1a5D6Eacb1781A8022386A66f49908a354"//"0xE1Fa53c9858FD7d08CFDF4335c189c94a3aA32B5" // "0xE1Fa53c9858FD7d08CFDF4335c189c94a3aA32B5"
+export const POOS_FACTORY_CONRACT_ADDRESS = "0x3C78D6B9978dB83723f4Aaa0FE27100f0762A3c6"//"0xE1Fa53c9858FD7d08CFDF4335c189c94a3aA32B5" // "0xE1Fa53c9858FD7d08CFDF4335c189c94a3aA32B5"
 
 
 export const FETCH_JSON_INIT = (payload = {}, method = "POST", contentType = "application/json") => {
@@ -46,7 +34,7 @@ export const FETCH_JSON_INIT = (payload = {}, method = "POST", contentType = "ap
         //credentials: "same-origin", // include, *same-origin, omit
         headers: {
             "Content-Type": contentType,
-            "x-auth-token": typeof window !== 'undefined' ? localStorage.getItem("_poostoken_") : null
+            "x-auth-token": localStorage.getItem("_poostoken_")
             // 'Content-Type': 'application/x-www-form-urlencoded',
         },
         //redirect: "follow", // manual, *follow, error
@@ -63,7 +51,7 @@ export const FETCH_INIT = (method = "GET") => {
         //credentials: "same-origin", // include, *same-origin, omit
         headers: {
             //"Content-Type": contentType,
-            "x-auth-token": typeof window !== 'undefined' ? localStorage.getItem("_poostoken_") : null
+            "x-auth-token": localStorage.getItem("_poostoken_")
             // 'Content-Type': 'application/x-www-form-urlencoded',
         },
     }
@@ -76,7 +64,7 @@ export const FETCH_FORMDATA_INIT = (formData, method = "POST") => {
         //cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
         //credentials: "same-origin", // include, *same-origin, omit
         headers: {
-            "x-auth-token": typeof window !== 'undefined' ? localStorage.getItem("_poostoken_") : null,
+            "x-auth-token": localStorage.getItem("_poostoken_"),
             //"Content-Type": contentType,
             //'Content-Type': 'multipart/form-data',
         },

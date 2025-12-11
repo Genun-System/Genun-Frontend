@@ -1,5 +1,5 @@
 "use client";
-import { Typography } from "../components/MaterialTailwind";
+import { Typography } from "@/app/components/MaterialTailwind";
 import { useAccount, useReadContract } from "wagmi";
 import { POOS_FACTORY_CONRACT_ADDRESS } from "../config";
 import abi from "../utils/abi";

@@ -9,16 +9,15 @@ import {
     DialogFooter,
     Spinner,
     Typography
-} from "../../components/MaterialTailwind";
-import { userContext } from "../../context/User";
-import Button from "../../components/Button";
+} from "@/app/components/MaterialTailwind";
+import { userContext } from "@/app/context/User";
+import Button from "@/app/components/Button";
 import { useWriteContract, useAccount, useConfig, useWatchContractEvent } from "wagmi";
-import { POOS_FACTORY_CONRACT_ADDRESS } from "../../config";
-import abi from "../../utils/abi";
+import { POOS_FACTORY_CONRACT_ADDRESS } from "@/app/config";
+import abi from "@/app/utils/abi";
 import { toast } from "react-toastify";
-import { updateUser } from "../../actions/auth";
+import { updateUser } from "@/app/actions/auth";
 import { getTransactionReceipt } from 'wagmi/actions'
-import { getErrorMessage, retryWithBackoff, checkNetworkConnectivity } from "../../utils/rpcErrorHandler";
 
 
 
@@ -56,113 +55,57 @@ const DeployContractDialog = ({open, setOpen}) => {
         if (user && (!(user?.contractAddress) || user?.isFirstTimeLogin)) {
             setOpen(true)
         }
-    }, [user, setOpen])
+    }, [user])
 
     const handleOpen = () => setOpen(!open);
 
     const deployERC1155 = async () => {
-        try {
-            // Validate wallet connection
-            if (!address) {
-                toast.error("Please connect your wallet first");
-                return;
-            }
-
-            // Validate contract address
-            if (!POOS_FACTORY_CONRACT_ADDRESS) {
-                toast.error("Contract address not configured");
-                return;
-            }
-
-            // Check network connectivity
-            const isNetworkAvailable = await checkNetworkConnectivity();
-            if (!isNetworkAvailable) {
-                toast.error("Network connection issue. Please check your internet connection and try again.");
-                return;
-            }
-
-            // Use retry logic for the contract deployment
-            await retryWithBackoff(async () => {
-                return new Promise((resolve, reject) => {
-                    writeContract(
-                        {
-                            abi,
-                            address: POOS_FACTORY_CONRACT_ADDRESS,
-                            functionName: 'createNewPOoS',
-                            args: [
-                                `${process.env.NEXT_PUBLIC_PROD_URL}product-verification/{id}`,
-                            ],
-                            // Add gas estimation for better transaction handling
-                            gas: 500000n, // Set a reasonable gas limit
-                        },
-                        {
-                            onSuccess: async (res, variable) => {
-                                console.log("Transaction submitted:", res);
-                                setConfirming(true);
-                                
-                                // Use retry logic for transaction receipt checking
-                                try {
-                                    await retryWithBackoff(async () => {
-                                        const result = await getTransactionReceipt(config, {
-                                            hash: res,
-                                        });
-                                        
-                                        if (!result || !result.logs || result.logs.length === 0) {
-                                            throw new Error("Transaction not yet confirmed");
-                                        }
-                                        
-                                        return result;
-                                    }, 15, 3000); // 15 retries with 3 second intervals
-                                    
-                                    // Get the final receipt
-                                    const finalResult = await getTransactionReceipt(config, { hash: res });
-                                    const contractAddress = finalResult.logs[0]?.address;
-                                    
-                                    if (contractAddress) {
-                                        const payload = { contractAddress: contractAddress };
-                                        const response = await updateUser(payload, user?._id);
-                                        const updateResult = await response.json();
-                                        
-                                        if (response.ok) {
-                                            setUser(updateResult?.singleUser);
-                                            setConfirming(false);
-                                            setOpen(false);
-                                            toast.success("Congratulations! Your contract has been deployed successfully. You can now mint digital tokens for your products.");
-                                            resolve(res);
-                                        } else {
-                                            throw new Error("Failed to update user with contract address");
-                                        }
-                                    } else {
-                                        throw new Error("Contract address not found in transaction receipt");
-                                    }
-                                } catch (receiptError) {
-                                    console.error("Receipt confirmation error:", receiptError);
-                                    setConfirming(false);
-                                    toast.error("Transaction submitted but confirmation failed. Please check your wallet for transaction status.");
-                                    reject(receiptError);
-                                }
-                            },
-
-                            onError: (err) => {
-                                console.error("Contract deployment error:", err);
-                                setConfirming(false);
-                                
-                                const errorMessage = getErrorMessage(err);
-                                toast.error(errorMessage);
-                                reject(err);
+        writeContract(
+            {
+                abi,
+                address: POOS_FACTORY_CONRACT_ADDRESS,
+                functionName: 'createNewPOoS',
+                args: [
+                    `${process.env.NEXT_PUBLIC_PROD_URL}product-verification/{id}`,
+                ],
+            },
+            {
+                onSuccess: async (res, variable) => {
+                    setConfirming(true);
+                    const intervalResult = setInterval(async () => {
+                        try {
+                            const result = await getTransactionReceipt(config, {
+                                hash: res,
+                            })
+                            //console.log("Deployment result:", result?.logs[0]?.address)
+                            const address = result?.logs[0]?.address
+                            if (address) {
+                                const payload = { contractAddress: address }
+                                const response = await updateUser(payload, user?._id);
+                                const result = await response.json();
+                                setUser(result?.singleUser);
+                                setOpen(false)
+                                toast.success("Congratulations! Your contract has been deployed. You can now mint the digitalized token of your product on the blockchain")
+                                setOpen(false)
+                                clearInterval(intervalResult)
                             }
                         }
-                    );
-                });
-            }, 3, 2000); // 3 retries with 2 second intervals
 
-        } catch (error) {
-            console.error("Deployment error:", error);
-            setConfirming(false);
-            
-            const errorMessage = getErrorMessage(error);
-            toast.error(errorMessage);
-        }
+                        catch (err) {
+                            console.log(err);
+                        }
+                    }, 3000)
+
+                },
+
+
+                onError: (err) => {
+                    console.log("Error", err)
+                    setOpen(false)
+                    toast.error("Oops! We couldn't deploy your contract. Please try again and ensure your wallet is connected with enough funds")
+                }
+            }
+        )
     }
 
 

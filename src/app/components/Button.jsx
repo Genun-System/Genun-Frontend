@@ -2,9 +2,7 @@ import { Button as MaterialButton } from "./MaterialTailwind";
 import PropTypes from "prop-types";
 
 const Button = (prop) => {
-    console.log('Button props:', prop);
     const { variant, className, children, ...other } = prop;
-    console.log('Button variant:', variant, 'className:', className);
     if (variant === "filled") {
         return (
             <MaterialButton className={`bg-primary flex flex-row items-center justify-center gap-x-[10px] capitalize rounded-[5px] border h-[65px] text-[14px] leading-[20px] font-oxygen text-background  ${prop?.className}`}
@@ -45,7 +43,7 @@ const Button = (prop) => {
     }
 }
 
-Button.propTypes = {
+Button.propType = {
     className: PropTypes.string,
     variant: PropTypes.oneOf(["filled", "outlined", "text"]).isRequired,
     children: PropTypes.node,

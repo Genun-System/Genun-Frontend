@@ -4,9 +4,7 @@ export const oxygen = Oxygen({
     weight: ["400", "700"],
     subsets: ["latin"],
     display: "swap",
-    variable: "--font-oxygen",
-    fallback: ["Arial", "sans-serif"],
-    adjustFontFallback: true,
+    variable: "--font-oxygen"
 })
 
 
@@ -14,9 +12,7 @@ export const crimsonText = Crimson_Text({
     weight: ["400", "600", "700"],
     subsets: ["latin"],
     display: "swap",
-    variable: "--font-crimson-text",
-    fallback: ["Georgia", "serif"],
-    adjustFontFallback: true,
+    variable: "--font-crimson-text"
 })
 
 
@@ -24,25 +20,19 @@ export const dmSans = DM_Sans({
     weight: ["400", "500", "600", "700", "900"],
     subsets: ["latin"],
     display: "swap",
-    variable: "--font-dm-sans",
-    fallback: ["system-ui", "sans-serif"],
-    adjustFontFallback: true,
+    variable: "--font-dm-sans"
 })
 
 export const inter = Inter({
     weight: ["400", "500", "600", "700", "900"],
     subsets: ["latin"],
     display: "swap",
-    variable: "--font-inter",
-    fallback: ["system-ui", "sans-serif"],
-    adjustFontFallback: true,
+    variable: "--font-inter"
 })
 
 export const oxygenMono = Oxygen_Mono({
     weight: ["400"],
     subsets: ["latin"],
     display: "swap",
-    variable: "--font-oxygen-mono",
-    fallback: ["Courier New", "monospace"],
-    adjustFontFallback: true,
+    variable: "--font-oxygen-mono"
 })

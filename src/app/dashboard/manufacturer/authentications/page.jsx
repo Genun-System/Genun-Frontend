@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { IconButton, Typography, Menu, MenuHandler, MenuList, MenuItem, Spinner, Tooltip } from "../../../components/MaterialTailwind";
 import { format } from "date-fns";
-import { LimitDisplayableTexts } from "../../../utils/LimitDisplayableTexts";
-import { getAuthentications } from "../../../actions/product";
+import { LimitDisplayableTexts } from "@/app/utils/LimitDisplayableTexts";
+import { getAuthentications } from "@/app/actions/product";
 const Authentication = () => {
 
     const [filter, setFilter] = useState({

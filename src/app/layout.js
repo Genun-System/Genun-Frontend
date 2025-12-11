@@ -4,7 +4,6 @@ import '@rainbow-me/rainbowkit/styles.css';
 import Providers from "./providers";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import ModalSetup from "./components/ModalSetup";
 
 
 export const metadata = {
@@ -18,8 +17,7 @@ export default function RootLayout({ children }) {
     <html lang="en"
       className={`${crimsonText.variable} ${oxygen.variable} ${dmSans.variable} ${inter.variable} ${oxygenMono.variable}`}
     >
-      <body className={`bg-black`} id="root">
-        <ModalSetup />
+      <body className={`bg-background`}>
         <Providers>
           {children}
         </Providers>

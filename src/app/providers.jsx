@@ -1,21 +1,42 @@
 'use client';
-import dynamic from "next/dynamic";
 import { ThemeProvider } from "./components/MaterialTailwind"
+import {
+  QueryClientProvider,
+  QueryClient,
+} from "@tanstack/react-query";
+import { WagmiProvider } from 'wagmi';
 import '@rainbow-me/rainbowkit/styles.css';
 
-// Disable SSR completely for Web3 components
-const ClientOnlyProviders = dynamic(
-  () => import('./components/ClientOnlyProviders'),
-  { ssr: false }
-);
+import {
+  RainbowKitProvider,
+  lightTheme
+} from '@rainbow-me/rainbowkit';
+import { wagmiConfig } from "./config";
+import { useState } from "react";
+
 
 export default function Providers({ children }) {
+  const queryClient = new QueryClient();
+  const [ user, setUser ]  = useState();
+
   return (
-    <ThemeProvider>
-      <ClientOnlyProviders>
-        {children}
-      </ClientOnlyProviders>
-    </ThemeProvider>
+   
+        <ThemeProvider>
+          <WagmiProvider config={wagmiConfig}>
+            <QueryClientProvider client={ queryClient }>
+              <RainbowKitProvider
+                theme={lightTheme({
+                  accentColor: '#235789',
+                  accentColorForeground: 'white',
+                  borderRadius: 'medium',
+                  fontStack: 'system',
+                })}
+              >
+                {children}
+              </RainbowKitProvider>
+            </QueryClientProvider>
+          </WagmiProvider>
+        </ThemeProvider>
   );
 }
 
