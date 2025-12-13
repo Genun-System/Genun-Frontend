@@ -5,8 +5,18 @@ import Providers from "./providers";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ModalSetup from "./components/ModalSetup";
-import WalletConnectionFallback from "./components/WalletConnectionFallback";
-import NetworkStatus from "./components/NetworkStatus";
+import dynamic from 'next/dynamic';
+
+// Dynamically import Web3 components with SSR disabled
+const WalletConnectionFallback = dynamic(
+  () => import("./components/WalletConnectionFallback"),
+  { ssr: false }
+);
+
+const NetworkStatus = dynamic(
+  () => import("./components/NetworkStatus"),
+  { ssr: false }
+);
 
 
 export const metadata = {

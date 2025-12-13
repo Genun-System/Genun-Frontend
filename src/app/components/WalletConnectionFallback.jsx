@@ -6,10 +6,23 @@ import { useAccount, useConnect } from 'wagmi';
 const WalletConnectionFallback = ({ children }) => {
   const [connectionError, setConnectionError] = useState(false);
   const [showFallback, setShowFallback] = useState(false);
-  const { isConnected } = useAccount();
-  const { connectors, connect } = useConnect();
+  const [isClient, setIsClient] = useState(false);
+  
+  // Only use Wagmi hooks on client side
+  const account = isClient ? useAccount() : { isConnected: false };
+  const connect = isClient ? useConnect() : { connectors: [], connect: () => {} };
+  
+  const { isConnected } = account;
+  const { connectors } = connect;
+
+  // Set client-side flag
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
+    if (!isClient) return;
+    
     // Monitor for WebSocket connection errors
     const handleError = (event) => {
       if (event.reason?.message?.includes('WebSocket connection failed')) {
@@ -28,7 +41,7 @@ const WalletConnectionFallback = ({ children }) => {
     return () => {
       window.removeEventListener('unhandledrejection', handleError);
     };
-  }, [isConnected]);
+  }, [isConnected, isClient]);
 
   // Reset fallback when connection is successful
   useEffect(() => {

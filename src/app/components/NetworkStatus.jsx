@@ -6,10 +6,15 @@ import { arbitrumSepolia } from 'wagmi/chains';
 import { checkNetworkConnectivity } from '../utils/rpcErrorHandler';
 
 const NetworkStatus = () => {
-    const { isConnected } = useAccount();
-    const chainId = useChainId();
+    const [isClient, setIsClient] = useState(false);
     const [networkStatus, setNetworkStatus] = useState('checking');
     const [lastChecked, setLastChecked] = useState(null);
+    
+    // Only use Wagmi hooks on client side
+    const account = isClient ? useAccount() : { isConnected: false };
+    const chainId = isClient ? useChainId() : null;
+    
+    const { isConnected } = account;
 
     const checkNetwork = async () => {
         setNetworkStatus('checking');
@@ -23,16 +28,23 @@ const NetworkStatus = () => {
         }
     };
 
+    // Set client-side flag
     useEffect(() => {
+        setIsClient(true);
+    }, []);
+
+    useEffect(() => {
+        if (!isClient || !isConnected) return;
+        
         if (isConnected) {
             checkNetwork();
             // Check network status every 30 seconds
             const interval = setInterval(checkNetwork, 30000);
             return () => clearInterval(interval);
         }
-    }, [isConnected]);
+    }, [isConnected, isClient]);
 
-    if (!isConnected) {
+    if (!isClient || !isConnected) {
         return null;
     }
 
