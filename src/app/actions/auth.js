@@ -7,7 +7,6 @@ const getApiUrl = () => {
     if (typeof window !== 'undefined') {
         const hostname = window.location.hostname;
         if (hostname.includes('netlify.app') || 
-            hostname.includes('vercel.app') || 
             hostname !== 'localhost') {
             console.log('Using PROD_URL:', API_URL.PROD_URL);
             return API_URL.PROD_URL;

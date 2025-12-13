@@ -172,7 +172,7 @@ const CreateProductForm = ({ open, setOpen }) => {
                                     
                                     // Generate QR code
                                     const baseUrl = process.env.NODE_ENV === 'production' 
-                                        ? 'https://p-oos-frontend.vercel.app' 
+                                        ? 'https://genuns.netlify.app' 
                                         : 'http://localhost:3000';
                                     const qrUrl = await QRCode.toDataURL(`${baseUrl}/product-verification/${productData.productId}`);
                                     
