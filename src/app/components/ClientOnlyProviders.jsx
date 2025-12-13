@@ -23,7 +23,7 @@ export default function ClientOnlyProviders({ children }) {
     },
   }));
 
-  // Only initialize Web3 providers on client side
+  // Only initialize on client side
   useEffect(() => {
     setIsClient(true);
     enableErrorSuppression();
@@ -33,7 +33,16 @@ export default function ClientOnlyProviders({ children }) {
     };
   }, []);
 
-  // Always provide both WagmiProvider and RainbowKitProvider
+  // Don't render Web3 providers during SSR or if wagmiConfig is not available
+  if (!isClient || !wagmiConfig) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
+    );
+  }
+
+  // Only render Web3 providers on client with valid config
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>

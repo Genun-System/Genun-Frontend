@@ -1,28 +1,34 @@
-import { getDefaultConfig } from "@rainbow-me/rainbowkit";
-import { arbitrumSepolia } from 'wagmi/chains';
-import { http } from 'wagmi';
-
 // Import error suppression utility
 import './utils/errorSuppression';
 
-export const wagmiConfig = getDefaultConfig({
+// Browser-only wagmi configuration
+let wagmiConfig = null;
+
+// Only initialize wagmi on the client side
+if (typeof window !== 'undefined') {
+  const { getDefaultConfig } = require("@rainbow-me/rainbowkit");
+  const { arbitrumSepolia } = require('wagmi/chains');
+  const { http } = require('wagmi');
+
+  wagmiConfig = getDefaultConfig({
     appName: 'Genun',
     projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '2f5a2c1b8e4d3a9f7c6b5e8d9a2f1c4b',
     chains: [arbitrumSepolia],
-    ssr: true,
-    // Enhanced transport configuration with multiple RPC endpoints
+    ssr: false, // Disable SSR for wagmi
     transports: {
-        [arbitrumSepolia.id]: http('https://sepolia-rollup.arbitrum.io/rpc', {
-            batch: false, // Disable batching to avoid RPC issues
-            fetchOptions: {
-                timeout: 30000, // Increase timeout
-            },
-            retryCount: 5, // More retries
-            retryDelay: 2000, // Longer delay between retries
-        })
+      [arbitrumSepolia.id]: http('https://sepolia-rollup.arbitrum.io/rpc', {
+        batch: false,
+        fetchOptions: {
+          timeout: 30000,
+        },
+        retryCount: 5,
+        retryDelay: 2000,
+      })
     }
-});
+  });
+}
 
+export { wagmiConfig };
 
 export const API_URL = {
     DEV_URL: (process.env.NEXT_PUBLIC_DEV_URL || 'http://localhost:3002/') + 'api/',
