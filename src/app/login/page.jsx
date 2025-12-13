@@ -2,7 +2,7 @@
 import { Form, Formik } from "formik";
 
 import * as yup from "yup";
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, Suspense } from "react"
 import Input from "../components/Input";
 import ErrorMessage from "../components/ErrorMessage";
 import PasswordInput from "../components/PasswordInput";
@@ -13,7 +13,7 @@ import { login } from "../actions/auth";
 import { toast } from "react-toastify";
 import Link from "next/link";
 
-const Login = () => {
+const LoginContent = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { isConnected, address } = useAccount();
@@ -222,5 +222,15 @@ const Login = () => {
         </section>
     )
 }
+
+const Login = () => {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center">
+            <div className="text-white">Loading...</div>
+        </div>}>
+            <LoginContent />
+        </Suspense>
+    );
+};
 
 export default Login;

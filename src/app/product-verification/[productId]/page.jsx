@@ -102,6 +102,7 @@ const ProductDetails = () => {
                                             <div className="relative w-[80%] tabletland:w-[409px] h-[350px] self-end">
                                                 <Image
                                                     src={product?.imageUrl}
+                                                    alt={product?.name || "Product image"}
                                                     //width={409}
                                                     //height={425}
                                                     className=" "
@@ -224,6 +225,7 @@ const ProductDetails = () => {
                                                 <div className="bg-white w-8 h-8 absolute top-[-16px] right-[-20px] rounded-bl-[10px] rounded-tl-[10px]" />
                                                 <Image
                                                     src={BarCode}
+                                                    alt="Product barcode"
                                                     className="w-full h-[75px]"
                                                 />
                                                 <Typography className="text-center text-background font-crimsonText leading-[31px] font-semibold">

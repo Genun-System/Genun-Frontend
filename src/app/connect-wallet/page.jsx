@@ -1,14 +1,14 @@
 'use client'
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
 import Image from "next/image";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
-const ConnectWallet = () => {
+const ConnectWalletContent = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [action, setAction] = useState('login');
@@ -261,6 +261,16 @@ const ConnectWallet = () => {
 
             <Footer />
         </div>
+    );
+};
+
+const ConnectWallet = () => {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center">
+            <div className="text-white">Loading...</div>
+        </div>}>
+            <ConnectWalletContent />
+        </Suspense>
     );
 };
 
