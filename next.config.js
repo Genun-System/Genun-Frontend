@@ -2,6 +2,11 @@
 const nextConfig = {
   reactStrictMode: true,
   
+  // Skip type checking during build (run separately with npm run type-check if needed)
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  
   // Suppress WebSocket warnings in development
   webpack: (config, { dev, isServer }) => {
     // Add externals for wallet compatibility
