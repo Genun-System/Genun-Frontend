@@ -3,12 +3,12 @@
  * Provides fallback RPC endpoints and error handling for blockchain interactions
  */
 
-// Arbitrum Sepolia RPC endpoints (fallbacks)
-export const ARBITRUM_SEPOLIA_RPC_URLS = [
-    'https://sepolia-rollup.arbitrum.io/rpc',
-    'https://arbitrum-sepolia.blockpi.network/v1/rpc/public',
-    'https://arbitrum-sepolia.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161', // Public Infura endpoint
-    'https://arbitrum-sepolia-rpc.publicnode.com'
+// Base Sepolia RPC endpoints (fallbacks)
+export const BASE_SEPOLIA_RPC_URLS = [
+    'https://sepolia.base.org',
+    'https://base-sepolia.blockpi.network/v1/rpc/public',
+    'https://base-sepolia.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161', // Public Infura endpoint
+    'https://base-sepolia-rpc.publicnode.com'
 ];
 
 /**
@@ -166,7 +166,7 @@ export const estimateGasWithFallback = async (contract, functionName, args = [])
  */
 export const checkNetworkConnectivity = async () => {
     try {
-        const response = await fetch('https://sepolia-rollup.arbitrum.io/rpc', {
+        const response = await fetch('https://sepolia.base.org', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

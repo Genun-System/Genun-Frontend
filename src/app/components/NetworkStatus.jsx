@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAccount, useChainId } from 'wagmi';
-import { arbitrumSepolia } from 'wagmi/chains';
+import { baseSepolia } from 'wagmi/chains';
 import { checkNetworkConnectivity } from '../utils/rpcErrorHandler';
 
 // Inner component that uses hooks
@@ -37,7 +37,7 @@ const NetworkStatusInner = () => {
         return null;
     }
 
-    const isCorrectNetwork = chainId === arbitrumSepolia.id;
+    const isCorrectNetwork = chainId === baseSepolia.id;
     
     const getStatusColor = () => {
         if (!isCorrectNetwork) return 'bg-yellow-500';
@@ -65,7 +65,7 @@ const NetworkStatusInner = () => {
 
     const getStatusMessage = () => {
         if (!isCorrectNetwork) {
-            return `Please switch to Arbitrum Sepolia (Chain ID: ${arbitrumSepolia.id}) to use this application.`;
+            return `Please switch to Base Sepolia (Chain ID: ${baseSepolia.id}) to use this application.`;
         }
         switch (networkStatus) {
             case 'connected': return 'All systems operational';

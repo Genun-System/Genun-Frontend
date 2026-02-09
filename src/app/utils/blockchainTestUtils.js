@@ -95,7 +95,7 @@ export const testWalletRequirements = (address, chainId) => {
     
     const results = {
         connected: !!address,
-        correctNetwork: chainId === 421614, // Arbitrum Sepolia
+        correctNetwork: chainId === 84532, // Base Sepolia
         addressFormat: address ? /^0x[a-fA-F0-9]{40}$/.test(address) : false
     };
     

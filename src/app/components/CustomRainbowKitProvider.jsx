@@ -40,7 +40,7 @@ const CustomRainbowKitProvider = ({ children }) => {
       showRecentTransactions={true}
       // Additional configuration to handle connection issues
       modalSize="compact"
-      initialChain={421614} // Arbitrum Sepolia chain ID
+      initialChain={84532} // Base Sepolia chain ID
     >
       {children}
     </RainbowKitProvider>

@@ -7,16 +7,16 @@ let wagmiConfig = null;
 // Only initialize wagmi on the client side
 if (typeof window !== 'undefined') {
   const { getDefaultConfig } = require("@rainbow-me/rainbowkit");
-  const { arbitrumSepolia } = require('wagmi/chains');
+  const { baseSepolia } = require('wagmi/chains');
   const { http } = require('wagmi');
 
   wagmiConfig = getDefaultConfig({
     appName: 'Genun',
     projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '2f5a2c1b8e4d3a9f7c6b5e8d9a2f1c4b',
-    chains: [arbitrumSepolia],
+    chains: [baseSepolia],
     ssr: false, // Disable SSR for wagmi
     transports: {
-      [arbitrumSepolia.id]: http('https://sepolia-rollup.arbitrum.io/rpc', {
+      [baseSepolia.id]: http('https://sepolia.base.org', {
         batch: false,
         fetchOptions: {
           timeout: 30000,
@@ -35,7 +35,7 @@ export const API_URL = {
     PROD_URL: (process.env.NEXT_PUBLIC_PROD_URL || 'https://genun-api-1.onrender.com/') + 'api/',
 }
 
-export const POOS_FACTORY_CONRACT_ADDRESS = "0x3C78D6B9978dB83723f4Aaa0FE27100f0762A3c6"//"0xE1Fa53c9858FD7d08CFDF4335c189c94a3aA32B5" // "0xE1Fa53c9858FD7d08CFDF4335c189c94a3aA32B5"
+export const POOS_FACTORY_CONRACT_ADDRESS = "0x2A301B1a5D6Eacb1781A8022386A66f49908a354"//"0xE1Fa53c9858FD7d08CFDF4335c189c94a3aA32B5" // "0xE1Fa53c9858FD7d08CFDF4335c189c94a3aA32B5"
 
 
 export const FETCH_JSON_INIT = (payload = {}, method = "POST", contentType = "application/json") => {
