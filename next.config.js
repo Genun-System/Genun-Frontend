@@ -7,6 +7,12 @@ const nextConfig = {
     // Add externals for wallet compatibility
     config.externals.push('pino-pretty', 'lokijs', 'encoding');
     
+    // Suppress React Native async storage warning (not needed for web)
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@react-native-async-storage/async-storage': false,
+    };
+    
     // Handle browser-only APIs during SSR
     if (isServer) {
       config.resolve.fallback = {

@@ -1,16 +1,25 @@
 "use client"
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useAccount } from 'wagmi';
+import dynamic from 'next/dynamic';
 import Link from "next/link";
 import Image from "next/image";
 
+// Dynamically import the wallet button component to avoid SSR issues
+const WalletButton = dynamic(
+    () => import('./WalletButton'),
+    { ssr: false }
+);
+
 const Header = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
     const pathname = usePathname();
-    const { isConnected, address } = useAccount();
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     const navItems = [
         { name: "Brands", href: "/brands" },
@@ -86,47 +95,7 @@ const Header = () => {
 
                 {/* Dynamic Header Button */}
                 <div className="hidden md:block">
-                    {isConnected && address ? (
-                        <ConnectButton.Custom>
-                            {({ openAccountModal, mounted }) => {
-                                return (
-                                    <button
-                                        onClick={openAccountModal}
-                                        disabled={!mounted}
-                                        className="flex items-center gap-2 px-4 py-2 bg-green-500/20 border border-green-500/30 rounded-lg hover:bg-green-500/30 transition-all duration-300 cursor-pointer"
-                                    >
-                                        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                                        <span className="text-green-400 font-mono text-sm">
-                                            {address.slice(0, 6)}...{address.slice(-4)}
-                                        </span>
-                                    </button>
-                                );
-                            }}
-                        </ConnectButton.Custom>
-                    ) : pathname === "/get-started" ? (
-                        <ConnectButton.Custom>
-                            {({ openConnectModal, mounted }) => {
-                                return (
-                                    <button 
-                                        onClick={openConnectModal}
-                                        disabled={!mounted}
-                                        className="px-6 py-2 text-white rounded-lg transition-all duration-300 hover:scale-105 cursor-pointer font-medium hover:shadow-lg hover:shadow-blue-400/25"
-                                        style={{backgroundColor: '#00AFFF'}}
-                                    >
-                                        Connect Wallet
-                                    </button>
-                                );
-                            }}
-                        </ConnectButton.Custom>
-                    ) : (
-                        <button 
-                            onClick={headerButton.action}
-                            className="px-6 py-2 text-white rounded-lg transition-all duration-300 hover:scale-105 cursor-pointer font-medium hover:shadow-lg hover:shadow-blue-400/25"
-                            style={{backgroundColor: '#00AFFF'}}
-                        >
-                            {headerButton.text}
-                        </button>
-                    )}
+                    {isMounted && <WalletButton pathname={pathname} headerButton={headerButton} />}
                 </div>
 
                 {/* Mobile Menu Button */}
@@ -158,56 +127,7 @@ const Header = () => {
                                 {item.name}
                             </Link>
                         ))}
-                        {isConnected && address ? (
-                            <ConnectButton.Custom>
-                                {({ openAccountModal, mounted }) => {
-                                    return (
-                                        <button
-                                            onClick={() => {
-                                                openAccountModal();
-                                                setIsMenuOpen(false);
-                                            }}
-                                            disabled={!mounted}
-                                            className="mt-4 flex items-center justify-center gap-2 px-4 py-3 bg-green-500/20 border border-green-500/30 rounded-lg hover:bg-green-500/30 transition-all duration-300 cursor-pointer w-full"
-                                        >
-                                            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                                            <span className="text-green-400 font-mono text-sm">
-                                                {address.slice(0, 6)}...{address.slice(-4)}
-                                            </span>
-                                        </button>
-                                    );
-                                }}
-                            </ConnectButton.Custom>
-                        ) : pathname === "/get-started" ? (
-                            <ConnectButton.Custom>
-                                {({ openConnectModal, mounted }) => {
-                                    return (
-                                        <button 
-                                            onClick={() => {
-                                                openConnectModal();
-                                                setIsMenuOpen(false);
-                                            }}
-                                            disabled={!mounted}
-                                            className="mt-4 px-6 py-3 text-white rounded-lg transition-all duration-300 hover:scale-105 cursor-pointer font-medium w-full"
-                                            style={{backgroundColor: '#00AFFF'}}
-                                        >
-                                            Connect Wallet
-                                        </button>
-                                    );
-                                }}
-                            </ConnectButton.Custom>
-                        ) : (
-                            <button 
-                                onClick={() => {
-                                    headerButton.action();
-                                    setIsMenuOpen(false);
-                                }}
-                                className="mt-4 px-6 py-3 text-white rounded-lg transition-all duration-300 hover:scale-105 cursor-pointer font-medium w-full"
-                                style={{backgroundColor: '#00AFFF'}}
-                            >
-                                {headerButton.text}
-                            </button>
-                        )}
+                        {isMounted && <WalletButton pathname={pathname} headerButton={headerButton} isMobile onClose={() => setIsMenuOpen(false)} />}
                     </nav>
                 </div>
             )}

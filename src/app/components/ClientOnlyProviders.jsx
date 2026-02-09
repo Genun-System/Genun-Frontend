@@ -3,11 +3,14 @@ import { useState, useEffect } from 'react';
 import { WagmiProvider } from 'wagmi';
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import CustomRainbowKitProvider from './CustomRainbowKitProvider';
+import WalletConnectionFallback from './WalletConnectionFallback';
+import NetworkStatus from './NetworkStatus';
 import { wagmiConfig } from "../config";
 import { enableErrorSuppression, disableErrorSuppression } from "../utils/errorSuppression";
 
 export default function ClientOnlyProviders({ children }) {
   const [isClient, setIsClient] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
       queries: {
@@ -28,17 +31,23 @@ export default function ClientOnlyProviders({ children }) {
     setIsClient(true);
     enableErrorSuppression();
     
+    // Add a small delay to ensure wagmiConfig is fully initialized
+    const timer = setTimeout(() => {
+      setIsMounted(true);
+    }, 100);
+    
     return () => {
+      clearTimeout(timer);
       disableErrorSuppression();
     };
   }, []);
 
-  // Don't render Web3 providers during SSR or if wagmiConfig is not available
-  if (!isClient || !wagmiConfig) {
+  // Show loading state during SSR and initial mount
+  if (!isClient || !isMounted || !wagmiConfig) {
     return (
-      <QueryClientProvider client={queryClient}>
-        {children}
-      </QueryClientProvider>
+      <div suppressHydrationWarning style={{ minHeight: '100vh' }}>
+        {/* Empty div to prevent hydration mismatch */}
+      </div>
     );
   }
 
@@ -47,7 +56,10 @@ export default function ClientOnlyProviders({ children }) {
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
         <CustomRainbowKitProvider>
-          {children}
+          <WalletConnectionFallback>
+            <NetworkStatus />
+            {children}
+          </WalletConnectionFallback>
         </CustomRainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>

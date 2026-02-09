@@ -5,8 +5,6 @@ import Providers from "./providers";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ModalSetup from "./components/ModalSetup";
-import WalletConnectionFallback from "./components/WalletConnectionFallback";
-import NetworkStatus from "./components/NetworkStatus";
 
 
 export const metadata = {
@@ -23,10 +21,7 @@ export default function RootLayout({ children }) {
       <body className={`bg-black`} id="root">
         <ModalSetup />
         <Providers>
-          <WalletConnectionFallback>
-            {children}
-          </WalletConnectionFallback>
-          <NetworkStatus />
+          {children}
         </Providers>
         <ToastContainer/>
       </body>
