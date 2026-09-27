@@ -3,7 +3,7 @@
 import { useParams, useRouter } from "next/navigation";
 import { Spinner, Typography } from "../../../components/MaterialTailwind"
 import React, { useState, useEffect } from "react"
-import { verifyAccount } from "@/app/actions/auth";
+import { verifyAccount } from "../../../actions/auth";
 import { toast } from "react-toastify";
 
 const VerifyAccount = () => {

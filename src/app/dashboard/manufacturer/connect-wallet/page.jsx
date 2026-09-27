@@ -1,52 +1,25 @@
-"use client"
-import { useAccount } from "wagmi";
-import Header from "../../../components/Header";
+"use client";
+
+import { ConnectButton } from "../../../components/Ranbowkit";
+import { useStellarWallet } from "../../../stellar/StellarWalletProvider";
 import { Typography } from "../../../components/MaterialTailwind";
-//import ConnectButton from "./components/ConnectButton";
-import { ConnectButton } from "../../../components/Ranbowkit"
-import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense } from "react";
 
- function ConnectWallet() {
-  const { isConnected } = useAccount()
-  const router = useRouter();
-  const param = useSearchParams ();
-
-  if (isConnected) {
-    if (param.get("action")=== "login") {
-      router.replace("/login")
-    }
-    else if (param.get("action") === "register") {
-      router.replace("/signup")
-    }
-  }
-
+const ConnectWalletPage = () => {
+  const { isConnected, address } = useStellarWallet();
 
   return (
-    <main className="flex min-h-screen flex-col relative">
-      <div className="absolute">
-        <Header />
-      </div>
-      <div className="flex w-full h-screen flex-col items-center justify-center space-y-12">
-        <Typography className="font-crimsonText text-center text-[21px] leading-[32px] md:text-[32px] font-semibold md:leading-[41px] text-[#474935]">
-          We love authenticity,
-          <span variant="" className="font-crimsonText text-[21px] leading-[32px] md:text-[32px] font-semibold md:leading-[41px] text-primary">
-            {" "}Don’t you?
-          </span>
+    <section className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
+      <Typography className="text-white text-xl font-crimsonText">
+        Freighter wallet
+      </Typography>
+      <ConnectButton />
+      {isConnected && address ? (
+        <Typography className="text-white/70 text-sm break-all max-w-md text-center">
+          {address}
         </Typography>
-        {
-          !isConnected  &&
-          <ConnectButton showBalance={false} />
-        }
-      </div>
-    </main>
+      ) : null}
+    </section>
   );
-}
+};
 
-export default function  SuspensedConnectWallet () {
-  return (
-    <Suspense>
-      <ConnectWallet/>
-    </Suspense>
-  )
-}
+export default ConnectWalletPage;

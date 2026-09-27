@@ -1,14 +1,12 @@
 # Genun
 
-Single monorepo for the Genun product-authenticity stack on **Stellar (Soroban)**.
-
-**Open this folder in your editor:** `/home/guilld-audit/Genun`
+Product-authenticity stack on **Stellar (Soroban)** — frontend, API, and smart contract in one repo (`Genun-FE` / Genun-Frontend).
 
 ```text
-Genun/
+.
 ├── sc/     Soroban smart contract
 ├── api/    Express + MongoDB backend
-├── fe/     Next.js + Freighter frontend
+├── src/    Next.js + Freighter frontend
 ├── README.md
 └── .gitignore
 ```
@@ -19,7 +17,7 @@ Genun/
 |------|------|
 | [`sc/`](sc/) | Soroban contract — batches, manufacturer roles, verify/deactivate |
 | [`api/`](api/) | Express + MongoDB — auth, product metadata, `stellarAddress` |
-| [`fe/`](fe/) | Next.js + Freighter — mint batches, QR, consumer verify |
+| root | Next.js + Freighter — mint batches, QR, consumer verify |
 
 ## Prerequisites
 
@@ -62,7 +60,7 @@ npm install && npm start   # :3000
 ### 3. Frontend
 
 ```bash
-cd fe
+# from repo root
 cp .env.example .env.local
 # set NEXT_PUBLIC_* URLs and NEXT_PUBLIC_GENUN_CONTRACT_ID=<contractId>
 npm install && npm run dev
@@ -70,10 +68,10 @@ npm install && npm run dev
 
 ### 4. Manufacturer flow
 
-1. Sign up / verify email / log in  
-2. Connect Freighter → save Stellar address  
-3. Admin grants manufacturer role (step 1)  
-4. Create category → create product (Freighter signs `create_batch`) → download QR  
+1. Sign up / verify email / log in
+2. Connect Freighter → save Stellar address
+3. Admin grants manufacturer role (step 1)
+4. Create category → create product (Freighter signs `create_batch`) → download QR
 
 ### 5. Consumer verify
 
@@ -84,7 +82,7 @@ Open `/product-verification/<productId>` (or scan QR). API returns product metad
 | Var | Where |
 |-----|--------|
 | `GENUN_CONTRACT_ID` | `api/.env` |
-| `NEXT_PUBLIC_GENUN_CONTRACT_ID` | `fe/.env.local` |
+| `NEXT_PUBLIC_GENUN_CONTRACT_ID` | `.env.local` |
 | `NEXT_PUBLIC_DEV_URL` / `PROD_URL` | must end with `/api/` |
 | Stellar RPC / Horizon / passphrase | defaults to Testnet in examples |
 

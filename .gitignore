@@ -1,6 +1,9 @@
 # Dependencies
 node_modules/
 **/node_modules/
+.pnp
+.pnp.js
+.yarn/install-state.gz
 
 # Env / secrets
 .env
@@ -9,6 +12,7 @@ node_modules/
 **/.env
 **/.env.*
 !**/.env.example
+.env*.local
 
 # Build / cache
 target/
@@ -21,16 +25,22 @@ broadcast/
 dist/
 build/
 *.wasm
+/coverage
+.vercel
+*.tsbuildinfo
 
 # OS / IDE
 .DS_Store
 .idea/
 .vscode/
 *.swp
+*.pem
 
 # Logs / uploads
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 api/uploads/*
 !api/uploads/.gitkeep
 

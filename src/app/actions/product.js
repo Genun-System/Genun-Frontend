@@ -5,7 +5,8 @@ import { API_URL, FETCH_FORMDATA_INIT, FETCH_INIT, FETCH_JSON_INIT } from "../co
 
 export const createProduct = async (formData) => {
     try {
-        const response = await fetch(`${API_URL.PROD_URL}products`, FETCH_FORMDATA_INIT(formData))
+        const apiUrl = process.env.NODE_ENV === 'development' ? API_URL.DEV_URL : API_URL.PROD_URL;
+        const response = await fetch(`${apiUrl}products`, FETCH_FORMDATA_INIT(formData))
         return response;
     }
 
@@ -16,7 +17,10 @@ export const createProduct = async (formData) => {
 
 export const createCategory = async (payload) => {
     try {
-        const response = await fetch(`${API_URL.PROD_URL}products/create-category`, FETCH_JSON_INIT(payload))
+        const apiUrl = process.env.NODE_ENV === 'development' ? API_URL.DEV_URL : API_URL.PROD_URL;
+        console.log('Creating category with API URL:', apiUrl);
+        console.log('Category payload:', payload);
+        const response = await fetch(`${apiUrl}products/create-category`, FETCH_JSON_INIT(payload))
         return response;
     }
 
@@ -27,7 +31,8 @@ export const createCategory = async (payload) => {
 
 export const getCategories = async () => {
     try {
-        const response = await fetch(`${API_URL.PROD_URL}products/categories`, FETCH_INIT())
+        const apiUrl = process.env.NODE_ENV === 'development' ? API_URL.DEV_URL : API_URL.PROD_URL;
+        const response = await fetch(`${apiUrl}products/categories`, FETCH_INIT())
         return response;
     }
 

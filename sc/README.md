@@ -39,4 +39,4 @@ stellar contract invoke --id $CONTRACT_ID --source genun-admin --network testnet
   -- add_manufacturer --manufacturer G...
 ```
 
-Copy `contractId` into `api` (`GENUN_CONTRACT_ID`) and `fe` (`NEXT_PUBLIC_GENUN_CONTRACT_ID`).
+Copy `contractId` into `api/.env` (`GENUN_CONTRACT_ID`) and repo-root `.env.local` (`NEXT_PUBLIC_GENUN_CONTRACT_ID`).

@@ -2,158 +2,124 @@
 
 import React, { useState } from "react";
 import {
-    //Button,
     Dialog,
     DialogHeader,
     DialogBody,
     DialogFooter,
     Spinner,
     Typography
-} from "@/app/components/MaterialTailwind";
-import { userContext } from "@/app/context/User";
-import Button from "@/app/components/Button";
-import { useWriteContract, useAccount, useConfig, useWatchContractEvent } from "wagmi";
-import { POOS_FACTORY_CONRACT_ADDRESS } from "@/app/config";
-import abi from "@/app/utils/abi";
+} from "../../components/MaterialTailwind";
+import { userContext } from "../../context/User";
+import Button from "../../components/Button";
 import { toast } from "react-toastify";
-import { updateUser } from "@/app/actions/auth";
-import { getTransactionReceipt } from 'wagmi/actions'
+import { updateUser } from "../../actions/auth";
+import { useStellarWallet } from "../../stellar/StellarWalletProvider";
+import { isManufacturerOnChain } from "../../stellar/contract";
+import { STELLAR } from "../../config";
 
-
-
-const DeployContractDialog = ({open, setOpen}) => {
-    
+const ConnectStellarDialog = ({ open, setOpen }) => {
     const { user, setUser } = React.useContext(userContext);
-    const { writeContract, isPending, reset, data, } = useWriteContract()
-    const { address, } = useAccount();
-    const [confirming, setConfirming] = useState(false);
-    const config = useConfig()
-
-    // useWatchContractEvent({
-    //     address: POOS_FACTORY_CONRACT_ADDRESS,
-    //     abi,
-    //     eventName: 'NewPOoSTokenCreated', 
-    //     onLogs: async (logs)=> {
-    //         console.log("logs:",logs)
-    //       if (logs[0].args[2]===address) {
-    //         //update user data with their smart contract 
-    //         const payload = { contractAddress:logs[0].args[0] }
-    //         const response = await updateUser(payload, user?._id);
-    //         const result = await response.json();
-    //         setUser(result?.singleUser);
-    //         //setOpen(false)
-    //         toast.success("Congratulations! Your contract has been deployed. You can now mint the digitalized token of your product on the blockchain")
-    //         setOpen(false)
-    //       }
-    //     },
-    //   })
-
-
+    const { address, connect, isConnected, connecting } = useStellarWallet();
+    const [saving, setSaving] = useState(false);
+    const [checkingRole, setCheckingRole] = useState(false);
 
     React.useEffect(() => {
-
-        if (user && (!(user?.contractAddress) || user?.isFirstTimeLogin)) {
-            setOpen(true)
+        if (user && (!(user?.stellarAddress) || user?.isFirstTimeLogin)) {
+            setOpen(true);
         }
-    }, [user])
+    }, [user, setOpen]);
 
     const handleOpen = () => setOpen(!open);
 
-    const deployERC1155 = async () => {
-        writeContract(
-            {
-                abi,
-                address: POOS_FACTORY_CONRACT_ADDRESS,
-                functionName: 'createNewPOoS',
-                args: [
-                    `${process.env.NEXT_PUBLIC_PROD_URL}product-verification/{id}`,
-                ],
-            },
-            {
-                onSuccess: async (res, variable) => {
-                    setConfirming(true);
-                    const intervalResult = setInterval(async () => {
-                        try {
-                            const result = await getTransactionReceipt(config, {
-                                hash: res,
-                            })
-                            //console.log("Deployment result:", result?.logs[0]?.address)
-                            const address = result?.logs[0]?.address
-                            if (address) {
-                                const payload = { contractAddress: address }
-                                const response = await updateUser(payload, user?._id);
-                                const result = await response.json();
-                                setUser(result?.singleUser);
-                                setOpen(false)
-                                toast.success("Congratulations! Your contract has been deployed. You can now mint the digitalized token of your product on the blockchain")
-                                setOpen(false)
-                                clearInterval(intervalResult)
-                            }
-                        }
-
-                        catch (err) {
-                            console.log(err);
-                        }
-                    }, 3000)
-
-                },
-
-
-                onError: (err) => {
-                    console.log("Error", err)
-                    setOpen(false)
-                    toast.error("Oops! We couldn't deploy your contract. Please try again and ensure your wallet is connected with enough funds")
-                }
+    const linkWallet = async () => {
+        try {
+            setSaving(true);
+            let addr = address;
+            if (!addr) {
+                addr = await connect();
             }
-        )
-    }
+            if (!addr) {
+                toast.error("Connect Freighter and approve access");
+                return;
+            }
 
+            setCheckingRole(true);
+            let isMfr = false;
+            try {
+                if (STELLAR.contractId && STELLAR.contractId !== "REPLACE_AFTER_DEPLOY") {
+                    isMfr = await isManufacturerOnChain(addr);
+                }
+            } catch (e) {
+                console.warn("Role check skipped:", e);
+            }
+            setCheckingRole(false);
+
+            const payload = { stellarAddress: addr, isFirstTimeLogin: false };
+            const response = await updateUser(payload, user?._id);
+            const result = await response.json();
+            if (!response.ok) {
+                throw new Error(result?.message || "Failed to save Stellar address");
+            }
+            setUser(result?.singleUser);
+            setOpen(false);
+            if (isMfr) {
+                toast.success("Freighter linked. You can tokenize products on Stellar.");
+            } else {
+                toast.success(
+                    "Freighter linked. Ask a Genun admin to grant manufacturer role on the contract before creating batches."
+                );
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error(err?.message || "Could not link Freighter wallet");
+        } finally {
+            setSaving(false);
+            setCheckingRole(false);
+        }
+    };
+
+    const busy = saving || connecting || checkingRole;
 
     return (
-        <>
-
-            <Dialog open={open} >
-                <DialogHeader>Hello, {user?.name}</DialogHeader>
-                <DialogBody>
-                    {
-                        isPending || confirming ?
-                            <div className="flex flex-col items-center">
-                                <Spinner color="#235789" className="h-10 w-10" />
-                                <Typography className="mt-6 font-oxygen font-normal  text-center text-[16px] leading-[19px] md:text-[20px]  md:leading-[25px] text-[#474935]">
-                                    {
-                                        !confirming ? "Please wait, deployment process started" :
-                                            "Deployment successful! Please wait for confirmation."
-                                    }
-                                </Typography>
-                            </div> :
-                            `Are you ready to embark on the journey of ensuring the authenticity of your
-                        products across the supply chain? If so, we'd like to seek your permission
-                        to assist you in deploying your product's digital token smart contract on
-                        the blockchain as part of the onboarding process.`
-                    }
-                </DialogBody>
-                <DialogFooter>
-                    {
-                        !confirming &&
-                        <Button
-                            variant="text"
-                            onClick={!isPending ? handleOpen : () => reset()}
-                            className="mr-1"
-                        >
-                            <span>Cancel</span>
-                        </Button>
-                    }
-                    {
-                        !isPending && !confirming &&
-                        <Button variant="filled" color="#235789" onClick={deployERC1155}>
-                            <span>Ok</span>
-                        </Button>
-                    }
-                </DialogFooter>
-            </Dialog>
-        </>
+        <Dialog open={open}>
+            <DialogHeader>Hello, {user?.name}</DialogHeader>
+            <DialogBody>
+                {busy ? (
+                    <div className="flex flex-col items-center">
+                        <Spinner color="#235789" className="h-10 w-10" />
+                        <Typography className="mt-6 font-oxygen font-normal text-center text-[16px] leading-[19px] md:text-[20px] md:leading-[25px] text-[#474935]">
+                            {checkingRole
+                                ? "Checking manufacturer role on Stellar…"
+                                : "Connecting Freighter…"}
+                        </Typography>
+                    </div>
+                ) : (
+                    <>
+                        Link your Freighter wallet (Stellar Testnet) so Genun can mint product
+                        batches on the shared Soroban contract. No per-manufacturer contract
+                        deploy is required.
+                        {isConnected && address ? (
+                            <Typography className="mt-4 break-all text-sm text-[#474935]">
+                                Connected: {address}
+                            </Typography>
+                        ) : null}
+                    </>
+                )}
+            </DialogBody>
+            <DialogFooter>
+                {!busy && (
+                    <Button variant="text" onClick={handleOpen} className="mr-1">
+                        <span>Cancel</span>
+                    </Button>
+                )}
+                {!busy && (
+                    <Button variant="filled" color="#235789" onClick={linkWallet}>
+                        <span>{isConnected ? "Save wallet" : "Connect Freighter"}</span>
+                    </Button>
+                )}
+            </DialogFooter>
+        </Dialog>
     );
-}
+};
 
-
-export default DeployContractDialog;
+export default ConnectStellarDialog;

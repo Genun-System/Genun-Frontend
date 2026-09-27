@@ -1,14 +1,14 @@
 "use client";
 
-import Button from "@/app/components/Button";
+import Button from "../../components/Button";
 import { Spinner, Tooltip, Typography } from "../../components/MaterialTailwind";
 import {  months, authentications } from "./data";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import AuthCharts from "./AuthChart";
 import { useEffect, useState } from "react";
-import { getAuthentications, getManufacturerStats } from "@/app/actions/product";
-import { LimitDisplayableTexts } from "@/app/utils/LimitDisplayableTexts";
+import { getAuthentications, getManufacturerStats } from "../../actions/product";
+import { LimitDisplayableTexts } from "../../utils/LimitDisplayableTexts";
 
 const Dashboard = () => {
     const router = useRouter();

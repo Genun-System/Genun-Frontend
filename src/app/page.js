@@ -1,125 +1,264 @@
 "use client"
 
-import { useRouter } from "next/navigation";
 import Typed from 'typed.js';
-import { Typography } from "./components/MaterialTailwind";
 import { useRef, useEffect } from "react";
-import Button from "./components/Button";
-import Link from "next/link";
 import Security from "./assets/images/security.png";
-import Image from "next/image"
+import Image from "next/image";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 export default function Landing() {
   const el = useRef(null);
-  const router = useRouter();
-  
 
   useEffect(() => {
-    const typed = new Typed(el.current, {
-      strings: ['Be Unique', 'Be Original', 'Be Authentic'],
-      typeSpeed: 100,
-      showCursor: false
-    });
+    if (el.current) {
+      const typed = new Typed(el.current, {
+        strings: ['Be Unique', 'Be Original', 'Be Authentic'],
+        typeSpeed: 100,
+        showCursor: false,
+        loop: true,
+        backSpeed: 50,
+        backDelay: 2000
+      });
 
-    return () => {
-      // Destroy Typed instance during cleanup to stop animation
-      typed.destroy();
-    };
+      return () => {
+        typed.destroy();
+      };
+    }
   }, []);
 
-
   return (
-    <main className="flex min-h-screen flex-col relative">
-      <div className="w-full">
-        <header className="flex flex-row w-full justify-between items-center pt-8 tabletland:pt-[55px] px-10 tabletland:px-[91px]">
-          <Link href={"/"}>
-          <img src="/Logo1.svg" alt="genun-logo" />
-            {/* <svg width="87" height="52" viewBox="0 0 85 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <g opacity="0.91">
-                <path d="M0.171875 27.1562C0.09375 27.026 0.0546875 26.7917 0.0546875 26.4531C0.0546875 26.0365 0.09375 25.8281 0.171875 25.8281C0.40625 25.8281 0.71875 25.7891 1.10938 25.7109C1.5 25.6328 1.86458 25.5286 2.20312 25.3984C2.56771 25.2682 2.77604 25.125 2.82812 24.9688C2.98438 24.5 3.0625 23.3151 3.0625 21.4141V6.64844C3.0625 5.16406 2.98438 4.09635 2.82812 3.44531C2.77604 3.28906 2.56771 3.14583 2.20312 3.01562C1.86458 2.85938 1.48698 2.72917 1.07031 2.625C0.679688 2.52083 0.380208 2.46875 0.171875 2.46875C0.0677083 2.46875 0.015625 2.27344 0.015625 1.88281C0.015625 1.49219 0.0677083 1.25781 0.171875 1.17969C2.90625 1.25781 4.63802 1.29688 5.36719 1.29688C5.73177 1.29688 6.13542 1.29688 6.57812 1.29688C7.02083 1.27083 7.48958 1.24479 7.98438 1.21875L10.6406 1.17969C11.4219 1.17969 12.1901 1.25781 12.9453 1.41406C13.7266 1.54427 14.5078 1.79167 15.2891 2.15625C16.5391 2.72917 17.5156 3.54948 18.2188 4.61719C18.9479 5.65885 19.3125 6.89583 19.3125 8.32812C19.3125 9.55208 19 10.75 18.375 11.9219C17.724 13.0938 16.7474 14.0964 15.4453 14.9297C14.1693 15.737 12.724 16.1406 11.1094 16.1406C10.5625 16.1406 10.0156 16.0495 9.46875 15.8672C8.92188 15.6589 8.54427 15.4115 8.33594 15.125C8.15365 14.9427 8.07552 14.6953 8.10156 14.3828C8.15365 14.0443 8.21875 13.875 8.29688 13.875C8.84375 14.1354 9.57292 14.2656 10.4844 14.2656C11.7344 14.2656 12.724 13.7578 13.4531 12.7422C14.1823 11.7005 14.5469 10.3984 14.5469 8.83594C14.5469 7.09115 14.1953 5.71094 13.4922 4.69531C12.7891 3.67969 11.7083 3.17188 10.25 3.17188C9.13021 3.17188 8.375 3.26302 7.98438 3.44531C7.67188 3.60156 7.51562 4.95573 7.51562 7.50781V21.4531C7.51562 22.9635 7.61979 24.0703 7.82812 24.7734C7.88021 24.9818 8.10156 25.1641 8.49219 25.3203C8.90885 25.4766 9.35156 25.6068 9.82031 25.7109C10.2891 25.7891 10.6406 25.8281 10.875 25.8281C10.9792 25.8281 11.0312 26.0495 11.0312 26.4922C11.0312 26.7266 11.0052 26.9479 10.9531 27.1562C8.11458 27 6.26562 26.9219 5.40625 26.9219C4.70312 26.9219 3.90885 26.9479 3.02344 27C2.16406 27.026 1.47396 27.0521 0.953125 27.0781L0.171875 27.1562ZM44 23.5234C41.5521 20.9714 40.3281 17.8594 40.3281 14.1875C40.3281 12.3646 40.6536 10.6589 41.3047 9.07031C41.9557 7.45573 42.8542 6.04948 44 4.85156C45.1458 3.6276 46.474 2.67708 47.9844 2C49.4948 1.29688 51.1094 0.945312 52.8281 0.945312C54.5469 0.945312 56.1615 1.29688 57.6719 2C59.1823 2.67708 60.5104 3.6276 61.6562 4.85156C62.8281 6.04948 63.7396 7.45573 64.3906 9.07031C65.0417 10.6589 65.3672 12.3646 65.3672 14.1875C65.3672 17.8594 64.1432 20.9714 61.6953 23.5234C60.0026 25.2943 58.1016 26.4661 55.9922 27.0391C53.8828 27.638 51.7734 27.638 49.6641 27.0391C47.5807 26.4661 45.6927 25.2943 44 23.5234ZM53.4531 25.4375C54.9375 25.4375 56.1875 24.9688 57.2031 24.0312C58.2448 23.0677 59.0391 21.7917 59.5859 20.2031C60.1328 18.5885 60.4062 16.8307 60.4062 14.9297C60.4062 12.9505 60.1458 11.0625 59.625 9.26562C59.2865 8.09375 58.7656 7.02604 58.0625 6.0625C57.3854 5.07292 56.5521 4.29167 55.5625 3.71875C54.599 3.14583 53.4922 2.85938 52.2422 2.85938C50.7578 2.85938 49.4948 3.32812 48.4531 4.26562C47.4375 5.20312 46.6562 6.46615 46.1094 8.05469C45.5885 9.64323 45.3281 11.401 45.3281 13.3281C45.3281 15.2812 45.6016 17.1432 46.1484 18.9141C46.513 20.0859 47.0339 21.1667 47.7109 22.1562C48.388 23.1458 49.2083 23.9401 50.1719 24.5391C51.1615 25.138 52.2552 25.4375 53.4531 25.4375ZM75.9141 27.3906C74.2995 27.3906 71.9036 27.026 68.7266 26.2969C68.5703 25.6719 68.4141 24.9297 68.2578 24.0703C68.1276 23.1849 68.0104 22.3516 67.9062 21.5703C67.8281 20.7891 67.7891 20.2552 67.7891 19.9688C67.8411 19.7604 68.0495 19.6562 68.4141 19.6562C69.0911 19.6562 69.4688 19.7604 69.5469 19.9688C69.651 20.4375 69.8333 20.9583 70.0938 21.5312C70.3542 22.0781 70.7188 22.6641 71.1875 23.2891C71.6302 23.9401 72.2292 24.474 72.9844 24.8906C73.7656 25.2812 74.638 25.4766 75.6016 25.4766C76.8255 25.4766 77.8411 25.112 78.6484 24.3828C79.4557 23.6536 79.8594 22.5599 79.8594 21.1016C79.8594 20.0599 79.5469 19.2526 78.9219 18.6797C78.3229 18.0807 77.6719 17.5339 76.9688 17.0391C76.7865 16.9349 76.5 16.7656 76.1094 16.5312C75.7188 16.2969 75.3281 16.0625 74.9375 15.8281C74.5729 15.5677 74.2865 15.3854 74.0781 15.2812C73.5833 14.9688 73.1667 14.7083 72.8281 14.5C72.5156 14.2917 72.2161 14.0833 71.9297 13.875C71.6432 13.6406 71.2917 13.3542 70.875 13.0156C70.0417 12.3385 69.3906 11.5703 68.9219 10.7109C68.4792 9.85156 68.2578 8.90104 68.2578 7.85938C68.2578 6.55729 68.6354 5.38542 69.3906 4.34375C70.1719 3.27604 71.1745 2.44271 72.3984 1.84375C73.6224 1.21875 74.9115 0.90625 76.2656 0.90625C76.9948 0.90625 77.6328 0.945312 78.1797 1.02344C78.7266 1.10156 79.1432 1.17969 79.4297 1.25781C79.7161 1.33594 80.0677 1.42708 80.4844 1.53125C80.901 1.63542 81.5651 1.79167 82.4766 2C82.7891 3.74479 82.9453 5.75 82.9453 8.01562C82.9193 8.25 82.763 8.36719 82.4766 8.36719C81.7734 8.36719 81.3958 8.25 81.3438 8.01562C81.2396 7.20833 80.9531 6.41406 80.4844 5.63281C80.0156 4.82552 79.4036 4.14844 78.6484 3.60156C77.9193 3.05469 77.0859 2.78125 76.1484 2.78125C74.9505 2.78125 74.026 3.11979 73.375 3.79688C72.75 4.47396 72.4375 5.38542 72.4375 6.53125C72.4375 7.26042 72.5677 7.83333 72.8281 8.25C73.0885 8.64062 73.4271 9.07031 73.8438 9.53906C74.1302 9.85156 74.599 10.2422 75.25 10.7109C75.901 11.1797 76.6302 11.6745 77.4375 12.1953C78.2448 12.6901 79.026 13.1589 79.7812 13.6016C81.2135 14.4349 82.3203 15.3464 83.1016 16.3359C83.8828 17.2995 84.2734 18.5885 84.2734 20.2031C84.2734 21.5833 83.8828 22.8203 83.1016 23.9141C82.3203 25.0078 81.2917 25.8672 80.0156 26.4922C78.7656 27.0911 77.3984 27.3906 75.9141 27.3906Z" fill="#474935" />
-                <path d="M29.4688 27.2734C27.8281 27.2734 26.3307 26.8828 24.9766 26.1016C23.6484 25.2943 22.5807 24.2266 21.7734 22.8984C20.9922 21.5703 20.6016 20.099 20.6016 18.4844C20.6016 16.8438 20.9922 15.3724 21.7734 14.0703C22.5547 12.7422 23.6094 11.6875 24.9375 10.9062C26.2917 10.125 27.7891 9.73438 29.4297 9.73438C31.0703 9.73438 32.5547 10.125 33.8828 10.9062C35.237 11.6875 36.3047 12.7422 37.0859 14.0703C37.8932 15.3984 38.2969 16.8698 38.2969 18.4844C38.2969 20.099 37.9062 21.5703 37.125 22.8984C36.3438 24.2266 35.2891 25.2943 33.9609 26.1016C32.6328 26.8828 31.1354 27.2734 29.4688 27.2734ZM29.8594 25.4375C30.6927 25.4375 31.3958 25.1641 31.9688 24.6172C32.5417 24.0703 32.9844 23.3411 33.2969 22.4297C33.6094 21.4922 33.7656 20.4896 33.7656 19.4219C33.7656 18.0156 33.5703 16.7266 33.1797 15.5547C32.8151 14.3568 32.2682 13.3932 31.5391 12.6641C30.8359 11.9349 29.9635 11.5703 28.9219 11.5703C28.1146 11.5703 27.4115 11.8438 26.8125 12.3906C26.2396 12.9375 25.7969 13.6667 25.4844 14.5781C25.1979 15.4896 25.0547 16.4922 25.0547 17.5859C25.0547 18.9922 25.237 20.2943 25.6016 21.4922C25.9922 22.6641 26.5521 23.6146 27.2812 24.3438C28.0104 25.0729 28.8698 25.4375 29.8594 25.4375Z" fill="#235789" />
-              </g>
-            </svg> */}
-          </Link>
-          <Button variant="filled"
-            onClick={() => router.push("get-started")}
-            className="md:w-[201px]"
-          >
-            Get Started
-          </Button>
-        </header>
-      </div>
-      <div className="flex w-full h-screen flex-col flex-1 tabletland:flex-row tabletland:space-x-5 lg:space-x-0 tabletland:items-center justify-center tabletland:justify-between pt-[70px] tabletland:pt-0">
-        <div className="px-10 tabletland:pr-0 pl-10 tabletland:pl-[91px]">
-          <Typography className="font-crimsonText text-center md:text-justify font-semibold text-[32px] leading-[48px] tabletland:text-[48px] tabletland:leading-[72px] text-[#474935]">
-            We want you to be the best you
-            <span ref={el} className="block text-primary" />
-          </Typography>
-        </div>
-        <div className=" md:self-end tabletland:self-center md:border md:border-[#47493533] md:rounded-full md:border-dashed relative">
-          <Image
-            src={Security}
-            alt="security-genun"
-          //className="h-auto"
-          />
-          <div className="hidden md:block absolute top-[-59px] right-0 z-[-1]">
-            <svg width="308" height="393" viewBox="0 0 308 393" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <g opacity="0.2">
-                <mask id="mask0_336_303" style={{ "mask-type": "luminance" }} maskUnits="userSpaceOnUse" x="57" y="51" width="307" height="291">
-                  <ellipse cx="147.974" cy="150" rx="147.974" ry="150" transform="matrix(0.883108 0.469169 -0.531477 0.847073 159.443 0)" fill="white" />
-                </mask>
-                <g mask="url(#mask0_336_303)">
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 169.852 -20.9984)" fill="#474935" />
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 189.455 -10.5838)" fill="#474935" />
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 207.42 -1.03937)" fill="#474935" />
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 227.024 9.37518)" fill="#474935" />
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 246.623 19.7883)" fill="#474935" />
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 264.594 29.3351)" fill="#474935" />
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 284.193 39.7487)" fill="#474935" />
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 303.795 50.1623)" fill="#474935" />
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 321.764 59.7077)" fill="#474935" />
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 341.365 70.1218)" fill="#474935" />
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 360.971 80.5358)" fill="#474935" />
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 377.305 89.2131)" fill="#474935" />
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 398.539 100.495)" fill="#474935" />
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 416.506 110.041)" fill="#474935" />
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 436.106 120.455)" fill="#474935" />
-                </g>
-              </g>
-            </svg>
-          </div>
-          <div className="hidden md:block absolute bottom-[-35px] right-0 z-[-1]">
-            <svg width="308" height="393" viewBox="0 0 308 393" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <g opacity="0.2">
-                <mask id="mask0_336_322" style={{ "mask-type": "luminance" }} maskUnits="userSpaceOnUse" x="57" y="51" width="307" height="291">
-                  <ellipse cx="147.974" cy="150" rx="147.974" ry="150" transform="matrix(0.883108 0.469169 -0.531477 0.847073 159.443 0)" fill="white" />
-                </mask>
-                <g mask="url(#mask0_336_322)">
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 169.852 -20.9984)" fill="#474935" />
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 189.455 -10.5838)" fill="#474935" />
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 207.42 -1.03937)" fill="#474935" />
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 227.024 9.37518)" fill="#474935" />
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 246.623 19.7883)" fill="#474935" />
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 264.594 29.3351)" fill="#474935" />
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 284.193 39.7487)" fill="#474935" />
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 303.795 50.1623)" fill="#474935" />
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 321.764 59.7077)" fill="#474935" />
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 341.365 70.1218)" fill="#474935" />
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 360.971 80.5358)" fill="#474935" />
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 377.305 89.2131)" fill="#474935" />
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 398.539 100.495)" fill="#474935" />
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 416.506 110.041)" fill="#474935" />
-                  <rect width="3.69936" height="318.75" transform="matrix(0.883108 0.469169 -0.531477 0.847073 436.106 120.455)" fill="#474935" />
-                </g>
-              </g>
-            </svg>
+    <div className="min-h-screen bg-black text-white">
+      <Header />
+      
+      {/* Hero Section with Shield */}
+      <div className="pt-20 px-8">
+        <div className="grid lg:grid-cols-2 gap-20 items-center max-w-7xl mx-auto min-h-[80vh]">
+          {/* Left Column - Text Content */}
+          <div className="space-y-8">
+            <h1 className="text-6xl font-bold text-white mb-4">
+              We want you to be the best you
+            </h1>
+            <div 
+              ref={el} 
+              className="text-4xl font-bold mb-8"
+              style={{color: '#00AFFF'}}
+            />
+            
+            <p className="text-xl text-gray-300 mb-8 max-w-2xl">
+              Revolutionizing product authenticity through blockchain technology. 
+              Protect your brand, build consumer trust.
+            </p>
 
+            <div className="flex gap-4">
+              <button 
+                onClick={() => {
+                  console.log("Get Started clicked - navigating to /get-started");
+                  window.location.href = "/get-started";
+                }}
+                className="px-8 py-4 text-white rounded-lg transition-all duration-300 hover:scale-105 cursor-pointer font-medium hover:shadow-lg hover:shadow-blue-400/25"
+                style={{backgroundColor: '#00AFFF'}}
+              >
+                Get Started
+              </button>
+              <button 
+                onClick={() => {
+                  console.log("Watch Demo clicked - navigating to /contact");
+                  window.location.href = "/contact";
+                }}
+                className="px-8 py-4 border-2 border-white/30 text-white rounded-lg hover:bg-white/10 transition-all duration-300 cursor-pointer font-medium"
+              >
+                Watch Demo
+              </button>
+            </div>
+          </div>
+
+          {/* Right Column - Shield Image with More Space */}
+          <div className="flex justify-center lg:justify-end pl-12">
+            <div className="relative p-12">
+              <div className="relative border-2 border-dashed border-blue-400/30 rounded-full p-12 hover:border-blue-400/60 transition-all duration-500">
+                <Image
+                  src={Security}
+                  alt="security-genun"
+                  className="transform hover:scale-110 transition-transform duration-700 ease-out max-w-full h-auto"
+                  width={400}
+                  height={400}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </main>
+
+      {/* How It Works */}
+      <section className="py-32 mt-20">
+        <h2 className="text-5xl font-bold text-white text-center mb-16">
+          How Genun Works
+        </h2>
+        
+        <div className="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto px-8">
+          <div className="text-center">
+            <div className="w-24 h-24 mx-auto mb-6 rounded-full flex items-center justify-center" style={{backgroundColor: '#00AFFF'}}>
+              <span className="text-2xl font-bold text-white">1</span>
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-4">Manufacturer Registration</h3>
+            <p className="text-gray-300">Companies register their products on our secure blockchain platform</p>
+          </div>
+
+          <div className="text-center">
+            <div className="w-24 h-24 mx-auto mb-6 rounded-full flex items-center justify-center bg-purple-500">
+              <span className="text-2xl font-bold text-white">2</span>
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-4">Blockchain Verification</h3>
+            <p className="text-gray-300">Each product gets a unique, immutable digital identity</p>
+          </div>
+
+          <div className="text-center">
+            <div className="w-24 h-24 mx-auto mb-6 rounded-full flex items-center justify-center bg-green-500">
+              <span className="text-2xl font-bold text-white">3</span>
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-4">Consumer Verification</h3>
+            <p className="text-gray-300">Customers scan QR codes to instantly verify authenticity</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20">
+        <h2 className="text-5xl font-bold text-white text-center mb-16">
+          Why Choose Genun?
+        </h2>
+        
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto px-8">
+          <div className="bg-gray-800/50 border border-gray-700 rounded-2xl p-8 hover:border-blue-400/50 transition-all duration-500 group hover:transform hover:scale-105">
+            <div className="w-16 h-16 mb-6 rounded-xl flex items-center justify-center" style={{backgroundColor: '#00AFFF'}}>
+              <span className="text-white text-2xl">🔒</span>
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-4">Unbreakable Security</h3>
+            <p className="text-gray-300">Military-grade blockchain encryption ensures your product data remains tamper-proof and secure.</p>
+          </div>
+
+          <div className="bg-gray-800/50 border border-gray-700 rounded-2xl p-8 hover:border-blue-400/50 transition-all duration-500 group hover:transform hover:scale-105">
+            <div className="w-16 h-16 bg-purple-500 mb-6 rounded-xl flex items-center justify-center">
+              <span className="text-white text-2xl">⚡</span>
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-4">Lightning Fast</h3>
+            <p className="text-gray-300">Instant verification in under 2 seconds. Your customers get immediate authenticity confirmation.</p>
+          </div>
+
+          <div className="bg-gray-800/50 border border-gray-700 rounded-2xl p-8 hover:border-blue-400/50 transition-all duration-500 group hover:transform hover:scale-105">
+            <div className="w-16 h-16 bg-green-500 mb-6 rounded-xl flex items-center justify-center">
+              <span className="text-white text-2xl">📊</span>
+            </div>
+            <h3 className="text-2xl font-bold text-white mb-4">Real-time Analytics</h3>
+            <p className="text-gray-300">Track verification patterns, identify counterfeit attempts, and gain valuable market insights.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Statistics Section */}
+      <section className="py-20 bg-gradient-to-r from-blue-900/20 to-purple-900/20">
+        <div className="max-w-6xl mx-auto px-8">
+          <h2 className="text-5xl font-bold text-white text-center mb-16">
+            Trusted by Industry Leaders
+          </h2>
+          
+          <div className="grid md:grid-cols-4 gap-8 text-center">
+            <div className="space-y-2">
+              <div className="text-4xl font-bold text-blue-400">10K+</div>
+              <div className="text-gray-300">Products Protected</div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-4xl font-bold text-blue-400">500+</div>
+              <div className="text-gray-300">Manufacturers</div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-4xl font-bold text-blue-400">99.9%</div>
+              <div className="text-gray-300">Uptime</div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-4xl font-bold text-blue-400">50+</div>
+              <div className="text-gray-300">Countries</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Industry Applications */}
+      <section className="py-20">
+        <div className="max-w-6xl mx-auto px-8">
+          <h2 className="text-5xl font-bold text-white text-center mb-16">
+            Industry Applications
+          </h2>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="text-center space-y-4">
+              <div className="w-20 h-20 mx-auto bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center">
+                <span className="text-3xl">👕</span>
+              </div>
+              <h3 className="text-xl font-bold text-white">Fashion & Luxury</h3>
+              <p className="text-gray-400 text-sm">Protect high-end brands from counterfeiting</p>
+            </div>
+            
+            <div className="text-center space-y-4">
+              <div className="w-20 h-20 mx-auto bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center">
+                <span className="text-3xl">💊</span>
+              </div>
+              <h3 className="text-xl font-bold text-white">Pharmaceuticals</h3>
+              <p className="text-gray-400 text-sm">Ensure medication authenticity and safety</p>
+            </div>
+            
+            <div className="text-center space-y-4">
+              <div className="w-20 h-20 mx-auto bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center">
+                <span className="text-3xl">📱</span>
+              </div>
+              <h3 className="text-xl font-bold text-white">Electronics</h3>
+              <p className="text-gray-400 text-sm">Verify genuine electronic components</p>
+            </div>
+            
+            <div className="text-center space-y-4">
+              <div className="w-20 h-20 mx-auto bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center">
+                <span className="text-3xl">🍷</span>
+              </div>
+              <h3 className="text-xl font-bold text-white">Food & Beverage</h3>
+              <p className="text-gray-400 text-sm">Track origin and authenticity of products</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 text-center">
+        <h2 className="text-5xl font-bold text-white mb-6">
+          Ready to Protect Your Brand?
+        </h2>
+        <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+          Join thousands of manufacturers who trust Genun to secure their products and build customer confidence.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <button 
+            onClick={() => {
+              console.log("Start Free Trial clicked - navigating to /get-started");
+              window.location.href = "/get-started";
+            }}
+            className="px-10 py-4 text-white rounded-lg text-lg transition-all duration-300 hover:scale-105 cursor-pointer font-medium hover:shadow-lg hover:shadow-blue-400/25"
+            style={{backgroundColor: '#00AFFF'}}
+          >
+            Start Free Trial
+          </button>
+          <button 
+            onClick={() => {
+              console.log("Schedule Demo clicked - navigating to /contact");
+              window.location.href = "/contact";
+            }}
+            className="px-10 py-4 border-2 border-white/30 text-white rounded-lg hover:bg-white/10 text-lg transition-all duration-300 cursor-pointer font-medium"
+          >
+            Schedule Demo
+          </button>
+        </div>
+      </section>
+
+      <Footer />
+    </div>
   );
 }
-
-
-

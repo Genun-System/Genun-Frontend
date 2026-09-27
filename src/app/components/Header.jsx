@@ -1,45 +1,105 @@
-"use client"
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { ConnectButton } from "./Ranbowkit";
+import { useStellarWallet } from "../stellar/StellarWalletProvider";
 import Link from "next/link";
-import WalletLogo from "../assets/images/wallet_logo.svg";
-import { useAccount, useBalance } from "wagmi";
-import { Typography } from "./MaterialTailwind";
-import formatWalletAddres
- from "../utils/formatWalletAddress";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 const Header = () => {
-    const { isConnected, address, } = useAccount();
-    const result = useBalance({
-        address: address
-    });
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const pathname = usePathname();
+    const { isConnected, address } = useStellarWallet();
 
+    const navItems = [
+        { name: "Brands", href: "/brands" },
+        { name: "About Us", href: "/about" },
+        { name: "Services", href: "/services" },
+        { name: "Contact Us", href: "/contact" }
+    ];
+
+    const getHeaderButton = () => {
+        if (pathname === "/get-started") {
+            return {
+                text: "Connect Wallet",
+                action: () => { window.location.href = "/connect-wallet"; }
+            };
+        }
+        if (pathname === "/connect-wallet" || pathname === "/login") {
+            return {
+                text: "Dashboard",
+                action: () => { window.location.href = "/dashboard/manufacturer"; }
+            };
+        }
+        return {
+            text: "Get Started",
+            action: () => { window.location.href = "/get-started"; }
+        };
+    };
+
+    const headerButton = getHeaderButton();
 
     return (
-        <header className="flex flex-row w-full justify-between items-center pt-8 tabletland:pt-[55px] px-10 tabletland:px-[91px]">
-            <Link href={"/"}>
-                <img src="/Logo1.svg" alt="genun-logo" />
-            </Link>
-            {/* {
-                isConnected ?
-                    <div className="px-4 py-2 md:px-6 md:py-[10px] border rounded-[5px] border-[#4749354D] flex items-center space-x-[15px]">
-                        <div className="w-[30px] h-[30px] rounded-full bg-[#47493533] flex  items-center justify-center">
-                            <Image width={16} height={16} src={WalletLogo} alt="" />
-                        </div>
-                        <div className="flex flex-col space-y-1">
-                            <Typography className="text-[#474935] font-semibold font-inter text-[16px] leading-[24px]">
-                                {result?.isFetched ? Number(result.data.formatted).toFixed(6) : ""} <span> {result?.isFetched ? result.data.symbol : ""}</span>
-                            </Typography>
-                            <Typography className="text-primary text-[12px] leading-[12px] font-inter">
-                                {formatWalletAddres(address)}
-                            </Typography>
-                        </div>
-                    </div> : null
-            } */}
+        <header className="w-full bg-black/95 backdrop-blur-sm border-b border-white/10 sticky top-0 z-50">
+            <div className="flex flex-row w-full justify-between items-center py-4 px-6 md:px-10 lg:px-[91px]">
+                <Link href="/" className="flex-shrink-0">
+                    <img src="/genun.svg" alt="genun-logo" className="h-12 w-auto" />
+                </Link>
 
-            <ConnectButton showBalance={true} />
+                <nav className="hidden md:flex items-center space-x-8">
+                    {navItems.map((item) => (
+                        <Link
+                            key={item.name}
+                            href={item.href}
+                            className="text-white/80 hover:text-white transition-colors duration-300 font-medium relative group"
+                        >
+                            {item.name}
+                            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+                        </Link>
+                    ))}
+                </nav>
+
+                <div className="hidden md:flex items-center gap-3">
+                    <ConnectButton />
+                    <button
+                        onClick={headerButton.action}
+                        className="px-6 py-2 text-white rounded-lg transition-all duration-300 hover:scale-105 font-medium"
+                        style={{ backgroundColor: "#00AFFF" }}
+                    >
+                        {headerButton.text}
+                    </button>
+                </div>
+
+                <button
+                    className="md:hidden text-white"
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    aria-label="Toggle menu"
+                >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        {isMenuOpen ? (
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        ) : (
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                        )}
+                    </svg>
+                </button>
+            </div>
+
+            {isMenuOpen && (
+                <div className="md:hidden border-t border-white/10 px-6 py-4 space-y-4">
+                    {navItems.map((item) => (
+                        <Link key={item.name} href={item.href} className="block text-white/80" onClick={() => setIsMenuOpen(false)}>
+                            {item.name}
+                        </Link>
+                    ))}
+                    <ConnectButton />
+                    {isConnected && address ? (
+                        <p className="text-xs text-gray-400 break-all">{address}</p>
+                    ) : null}
+                </div>
+            )}
         </header>
-    )
-}
+    );
+};
 
 export default Header;
