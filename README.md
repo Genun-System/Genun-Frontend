@@ -1,36 +1,96 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Genun
 
-## Getting Started
+Single monorepo for the Genun product-authenticity stack on **Stellar (Soroban)**.
 
-First, run the development server:
+**Open this folder in your editor:** `/home/guilld-audit/Genun`
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```text
+Genun/
+├── sc/     Soroban smart contract
+├── api/    Express + MongoDB backend
+├── fe/     Next.js + Freighter frontend
+├── README.md
+└── .gitignore
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Packages
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+| Path | Role |
+|------|------|
+| [`sc/`](sc/) | Soroban contract — batches, manufacturer roles, verify/deactivate |
+| [`api/`](api/) | Express + MongoDB — auth, product metadata, `stellarAddress` |
+| [`fe/`](fe/) | Next.js + Freighter — mint batches, QR, consumer verify |
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Prerequisites
 
-## Learn More
+- [Freighter](https://freighter.app/) (Testnet enabled)
+- Node.js 18+
+- Rust (`wasm32v1-none` or `wasm32-unknown-unknown` target)
+- [Stellar CLI](https://developers.stellar.org/docs/tools/cli) (`stellar`) — e.g. `~/.local/bin/stellar`
+- MongoDB
 
-To learn more about Next.js, take a look at the following resources:
+## Quick start
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 1. Deploy Genun contract (Testnet)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+```bash
+cd sc
+make test
+make build
+stellar keys generate genun-admin --network testnet --fund
+make deploy-testnet
+# writes sc/deployments/testnet.json with contractId
+```
 
-## Deploy on Vercel
+Grant a manufacturer Freighter address (G…):
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+CONTRACT_ID=$(jq -r .contractId deployments/testnet.json)
+stellar contract invoke --id "$CONTRACT_ID" --source genun-admin --network testnet \
+  -- add_manufacturer --manufacturer GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### 2. API
+
+```bash
+cd api
+cp .env.example .env
+# set MONGO_URI, JWT, Cloudinary, and GENUN_CONTRACT_ID=<contractId>
+npm install && npm start   # :3000
+```
+
+### 3. Frontend
+
+```bash
+cd fe
+cp .env.example .env.local
+# set NEXT_PUBLIC_* URLs and NEXT_PUBLIC_GENUN_CONTRACT_ID=<contractId>
+npm install && npm run dev
+```
+
+### 4. Manufacturer flow
+
+1. Sign up / verify email / log in  
+2. Connect Freighter → save Stellar address  
+3. Admin grants manufacturer role (step 1)  
+4. Create category → create product (Freighter signs `create_batch`) → download QR  
+
+### 5. Consumer verify
+
+Open `/product-verification/<productId>` (or scan QR). API returns product metadata; FE optionally calls on-chain `verify_product`.
+
+## Env summary
+
+| Var | Where |
+|-----|--------|
+| `GENUN_CONTRACT_ID` | `api/.env` |
+| `NEXT_PUBLIC_GENUN_CONTRACT_ID` | `fe/.env.local` |
+| `NEXT_PUBLIC_DEV_URL` / `PROD_URL` | must end with `/api/` |
+| Stellar RPC / Horizon / passphrase | defaults to Testnet in examples |
+
+## Architecture notes
+
+- **One shared Soroban contract** (not per-manufacturer factory).
+- API does not talk to the chain except storing addresses / returning `contractId`.
+- Product create: on-chain `create_batch` first, then Mongo product with `batchId`.
+- Deactivate is restricted to the **batch creator** address.

@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Build / cache
+target/
+**/target/
+out/
+cache/
+broadcast/
+.next/
+**/.next/
+dist/
+build/
+*.wasm
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Logs / uploads
+*.log
+npm-debug.log*
+api/uploads/*
+!api/uploads/.gitkeep
+
+# Soroban / Rust
+**/*.rs.bk
+Cargo.lock
+!sc/Cargo.lock
