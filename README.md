@@ -92,3 +92,14 @@ Open `/product-verification/<productId>` (or scan QR). API returns product metad
 - API does not talk to the chain except storing addresses / returning `contractId`.
 - Product create: on-chain `create_batch` first, then Mongo product with `batchId`.
 - Deactivate is restricted to the **batch creator** address.
+
+## Contributing
+
+Contributions are welcome. See **[CONTRIBUTING.md](CONTRIBUTING.md)** for local setup of all three packages, the branch and PR workflow, and the checks to run before opening a pull request.
+
+Two things to know up front:
+
+- **Genun is Stellar-only.** Don't add EVM tooling (`wagmi`, `RainbowKit`, `viem`, `ethers`) — the repo was an EVM app earlier in its history, and that code is dead.
+- **Run the frontend on port 3001** (`npm run dev -- -p 3001`); the API already occupies 3000.
+
+Bug reports and feature requests go through the [issue templates](.github/ISSUE_TEMPLATE). For anything with security impact, contact the maintainers privately instead of opening a public issue.
